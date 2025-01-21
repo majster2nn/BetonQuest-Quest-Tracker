@@ -24,9 +24,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScrollButton;
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
@@ -117,8 +116,18 @@ public class QuestMenu extends MultiPageInventoryGUI {
         List<String> playerTags = playerData.getTags();
 
         Map<String, QuestPackage> mappedQuests = Config.getPackages();
+        Map<String, QuestPackage> sortedQuests = mappedQuests.entrySet()
+                .stream()
+                .parallel()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
 
-        mappedQuests.forEach((id, questPackage) -> {
+        sortedQuests.forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("basicQuest")){return;}
             System.out.println(playerTags);
             if(playerTags.contains(questPackage + ".questUnavailable")){return;}
