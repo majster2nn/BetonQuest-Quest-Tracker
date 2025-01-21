@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group = 'majster2nn.dev'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven { url = 'https://nexus.betonquest.org/repository/betonquest/'}
+    maven { url = 'https://libraries.minecraft.net/' }
+    maven { url = "https://maven.minecraft.net/" }
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+    compileOnly('org.betonquest:betonquest:2.2.1'){
+        exclude group: "com.comphenix.packetwrapper", module: "PacketWrapper"
+    }
+    compileOnly 'com.mojang:authlib:1.5.25'
+}
+
+java {
+    sourceCompatibility = 21
+    targetCompatibility = 21
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:none"
+    options.compilerArgs << "-nowarn"
+
+    options.encoding = 'UTF-8'
+}
+

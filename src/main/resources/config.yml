@@ -1,0 +1,12 @@
+menuTranslations:
+  header:
+    en: "Quests"
+    pl: "Zadania"
+
+  nextP:
+    en: "Next Page"
+    pl: "Kolejna Strona"
+
+  prevP:
+    en: "Previous Page"
+    pl: "Poprzednia Strona"
