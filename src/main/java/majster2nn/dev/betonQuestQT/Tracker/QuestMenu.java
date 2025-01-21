@@ -8,6 +8,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.profiles.Profile;
 import org.betonquest.betonquest.config.Config;
 import org.betonquest.betonquest.database.PlayerData;
 import org.betonquest.betonquest.utils.PlayerConverter;
@@ -24,6 +26,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScrollButton;
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
@@ -109,9 +112,16 @@ public class QuestMenu extends MultiPageInventoryGUI {
     public void setQuestButtons(Player player){
         final int[] currentSlot = {9};
         final int[] currentPage = {1};
+        Profile profile = PlayerConverter.getID(player);
+        PlayerData playerData = BetonQuest.getInstance().getPlayerData(profile);
+        List<String> playerTags = playerData.getTags();
 
-        Config.getPackages().forEach((id, questPackage) -> {
+        Map<String, QuestPackage> mappedQuests = Config.getPackages();
+
+        mappedQuests.forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("basicQuest")){return;}
+            System.out.println(playerTags);
+            if(playerTags.contains(questPackage + ".questUnavailable")){return;}
 
             this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
                     .creator(player1 -> {
@@ -122,7 +132,7 @@ public class QuestMenu extends MultiPageInventoryGUI {
                             Component questName = Component.text("");
                             for(String word : GlobalVariableResolver.resolve(questPackage, "$questName$").split(" ")){
                                 questName = questName.append(Component
-                                        .text(word.split("")[0].equals("%") ? BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, word, PlayerConverter.getID(player)) : word + " ")
+                                        .text(word.split("")[0].equals("%") ? BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, word, profile) : word + " ")
                                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
                                         );
                             }
@@ -135,7 +145,7 @@ public class QuestMenu extends MultiPageInventoryGUI {
                                     if(word.equals("\n")) continue;
 
                                     loreLine = loreLine.append(Component
-                                            .text(word.split("")[0].equals("%") ? BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, word, PlayerConverter.getID(player)) : word + " ")
+                                            .text(word.split("")[0].equals("%") ? BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, word, profile) : word + " ")
                                             .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
                                             .color(TextColor.color(Integer.parseInt("757575" , 16)
                                             )));
