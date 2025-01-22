@@ -128,47 +128,20 @@ public class QuestMenu extends MultiPageInventoryGUI {
                 ));
 
         sortedQuests.forEach((id, questPackage) -> {
-            if(!questPackage.getTemplates().contains("basicQuest")){return;}
-            System.out.println(playerTags);
+            if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             if(playerTags.contains(questPackage + ".questUnavailable")){return;}
 
+            QuestPlaceholder questPlaceholder = new QuestPlaceholder(
+                    new ItemStack(Material.matchMaterial(GlobalVariableResolver.resolve(questPackage, "$questDisplay$"))),
+                    GlobalVariableResolver.resolve(questPackage, "$questName$"),
+                    GlobalVariableResolver.resolve(questPackage, "$questDesc$").split("\n"),
+                    player,
+                    questPackage
+            );
+
+
             this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
-                    .creator(player1 -> {
-                        ItemStack display = new ItemStack(Material.DIRT);
-                        try {
-                            display = new ItemStack(Material.matchMaterial(GlobalVariableResolver.resolve(questPackage, "$questDisplay$")));
-                            ItemMeta itemMeta = display.getItemMeta();
-                            Component questName = Component.text("");
-                            for(String word : GlobalVariableResolver.resolve(questPackage, "$questName$").split(" ")){
-                                questName = questName.append(Component
-                                        .text(word.split("")[0].equals("%") ? BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, word, profile) : word + " ")
-                                        .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                                        );
-                            }
-                            itemMeta.displayName(questName);
-
-                            List<Component> loreParts = new ArrayList<>();
-                            for(String line : GlobalVariableResolver.resolve(questPackage, "$questDesc$").split("\n")){
-                                Component loreLine = Component.text("");
-                                for(String word : line.split(" ")){
-                                    if(word.equals("\n")) continue;
-
-                                    loreLine = loreLine.append(Component
-                                            .text(word.split("")[0].equals("%") ? BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, word, profile) : word + " ")
-                                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                                            .color(TextColor.color(Integer.parseInt("757575" , 16)
-                                            )));
-                                }
-                                loreParts.add(loreLine);
-                            }
-                            itemMeta.lore(loreParts);
-                            display.setItemMeta(itemMeta);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        return display;
-                    })
+                    .creator(player1 -> questPlaceholder.getQuestDisplay())
                     .consumer(e -> {
                         e.setCancelled(true);
                     })

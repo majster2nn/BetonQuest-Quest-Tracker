@@ -4,6 +4,7 @@ package majster2nn.dev.betonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIListener;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIManager;
 import majster2nn.dev.betonQuestQT.Tracker.CommandHandler;
+import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
@@ -37,8 +38,6 @@ public final class BetonQuestQT extends JavaPlugin {
 
         setup();
         updateConfig();
-
-
     }
 
     @Override
