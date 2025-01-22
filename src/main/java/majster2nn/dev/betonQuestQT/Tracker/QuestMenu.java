@@ -131,10 +131,15 @@ public class QuestMenu extends MultiPageInventoryGUI {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             if(playerTags.contains(questPackage + ".questUnavailable")){return;}
 
+
             QuestPlaceholder questPlaceholder = new QuestPlaceholder(
-                    new ItemStack(Material.matchMaterial(GlobalVariableResolver.resolve(questPackage, "$questDisplay$"))),
-                    GlobalVariableResolver.resolve(questPackage, "$questName$"),
-                    GlobalVariableResolver.resolve(questPackage, "$questDesc$").split("\n"),
+                    new ItemStack(Material.matchMaterial(questPackage.getConfig().getString("questParameters.questDisplay"))),
+                    !questPackage.getConfig().getConfigurationSection("questParameters.questName").getKeys(false).isEmpty()
+                            ? questPackage.getConfig().getConfigurationSection("questParameters.questName").getString(BetonQuest.getInstance().getPlayerData(PlayerConverter.getID(player)).getLanguage())
+                            : questPackage.getConfig().getConfigurationSection("questParameters").getString("questName"),
+                    !questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getKeys(false).isEmpty()
+                            ? questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getString(BetonQuest.getInstance().getPlayerData(PlayerConverter.getID(player)).getLanguage())
+                            : questPackage.getConfig().getConfigurationSection("questParameters").getString("questDesc"),
                     player,
                     questPackage
             );

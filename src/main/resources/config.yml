@@ -10,3 +10,15 @@ menuTranslations:
   prevP:
     en: "Previous Page"
     pl: "Poprzednia Strona"
+
+  quest_active:
+    en: "Active"
+    pl: "Aktywne"
+
+  quest_finished:
+    en: "Finished"
+    pl: "Ukończone"
+
+  quest_locked:
+    en: "Locked"
+    pl: "Zablokowane"
