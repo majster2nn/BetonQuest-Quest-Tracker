@@ -17,7 +17,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuestPlaceholder {
     public ItemStack displayMaterial;
@@ -26,6 +28,9 @@ public class QuestPlaceholder {
     public Statuses status = Statuses.LOCKED;
     public Player player;
     private QuestPackage questPackage;
+
+    public static Map<Player, HashMap<QuestPackage, Statuses>> packageStatusesMap = new HashMap<>();
+    public static Map<String, QuestPackage> packageByNameMap = new HashMap<>();
 
     public ItemStack questDisplay;
 
@@ -68,6 +73,10 @@ public class QuestPlaceholder {
                     .color(TextColor.color(Integer.parseInt("757575" , 16)))
             );
         }
+
+        status = packageStatusesMap.getOrDefault(player, new HashMap<>() {{
+            put(questPackage, Statuses.LOCKED);
+        }}).getOrDefault(questPackage, Statuses.LOCKED);
 
         switch(status){
             case ACTIVE:{

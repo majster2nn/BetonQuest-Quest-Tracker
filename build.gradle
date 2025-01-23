@@ -18,6 +18,7 @@ repositories {
     maven { url = 'https://nexus.betonquest.org/repository/betonquest/'}
     maven { url = 'https://libraries.minecraft.net/' }
     maven { url = "https://maven.minecraft.net/" }
+    maven { url = 'https://repo.extendedclip.com/releases/'}
 }
 
 dependencies {
@@ -26,6 +27,7 @@ dependencies {
         exclude group: "com.comphenix.packetwrapper", module: "PacketWrapper"
     }
     compileOnly 'com.mojang:authlib:1.5.25'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
 }
 
 java {
