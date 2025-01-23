@@ -68,7 +68,6 @@ public class DataBaseManager {
             }
 
             stmt.execute("UPDATE " + userDataTable + " SET STATUS = '" + status.toString() + "' WHERE UUID = '" + uuid + "' AND QUEST = '" + questName + "'");
-            System.out.println(questName + "  jajo");
         } catch (SQLException e) {
             BetonQuestQT.getInstance().getLogger().severe(e.getMessage());
         }

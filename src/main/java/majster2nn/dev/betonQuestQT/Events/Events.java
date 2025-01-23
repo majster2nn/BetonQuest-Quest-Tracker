@@ -18,8 +18,6 @@ public class Events implements Listener {
 
         Config.getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            System.out.println(id + " SPERMASTYCZNA");
-            System.out.println(DataBaseManager.getQuestStatus(player.getUniqueId().toString(), id) + " JAJCA BENEDYKTA");
             QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, k -> new HashMap<>())
                     .put(questPackage, QuestPlaceholder.Statuses.valueOf(
                             DataBaseManager.getQuestStatus(player.getUniqueId().toString(), id).toString().toUpperCase()
