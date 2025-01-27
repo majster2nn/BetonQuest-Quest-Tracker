@@ -29,7 +29,7 @@ public class QuestPlaceholder {
     public Player player;
     private QuestPackage questPackage;
 
-    public static Map<Player, HashMap<QuestPackage, Statuses>> packageStatusesMap = new HashMap<>();
+    public static Map<Player, @NotNull HashMap<@NotNull QuestPackage, @NotNull Statuses>> packageStatusesMap = new HashMap<>();
     public static Map<String, QuestPackage> packageByNameMap = new HashMap<>();
 
     public ItemStack questDisplay;
@@ -94,6 +94,7 @@ public class QuestPlaceholder {
                 break;
             }
             case LOCKED:{
+                loreComponents.clear();
                 loreComponents.add(Component
                         .text(BetonQuestQT.getInstance().getTranslation("quest_locked", player))
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)

@@ -28,15 +28,21 @@ public class QuestStatus extends PlaceholderExpansion {
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (player.isOnline() && player instanceof Player) {
-            return String.valueOf(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>(){{
+            System.out.println(QuestPlaceholder.packageStatusesMap.get(player));
+            System.out.println(QuestPlaceholder.packageByNameMap.get(params));
+            return QuestPlaceholder.packageStatusesMap.getOrDefault(player.getPlayer(), new HashMap<>() {{
                 put(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED);
-            }}).get(QuestPlaceholder.packageByNameMap.get(params)));
+            }}).getOrDefault(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED).toString();
         }
         return "0";
     }
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        return String.valueOf(QuestPlaceholder.packageStatusesMap.get(player).get(QuestPlaceholder.packageByNameMap.get(params)));
+        System.out.println(QuestPlaceholder.packageStatusesMap.get(player));
+        System.out.println(QuestPlaceholder.packageByNameMap.get(params));
+        return QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>() {{
+            put(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED);
+        }}).getOrDefault(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED).toString();
     }
 }

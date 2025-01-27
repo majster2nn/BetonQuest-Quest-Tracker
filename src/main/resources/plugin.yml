@@ -9,3 +9,11 @@ depend:
 commands:
   QuestMenu:
     description: ""
+  Reload:
+    description: "Reloads plugin"
+    permission: bqqt.restart
+
+permissions:
+  bqqt.restart:
+    description: "Allows reloads of plugin"
+    default: op

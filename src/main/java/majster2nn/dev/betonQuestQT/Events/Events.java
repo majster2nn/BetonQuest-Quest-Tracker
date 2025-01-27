@@ -20,7 +20,7 @@ public class Events implements Listener {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, k -> new HashMap<>())
                     .put(questPackage, QuestPlaceholder.Statuses.valueOf(
-                            DataBaseManager.getQuestStatus(player.getUniqueId().toString(), id).toString().toUpperCase()
+                            DataBaseManager.getQuestStatus(player.getUniqueId().toString(), id).toUpperCase()
                     ));
         });
     }

@@ -50,22 +50,14 @@ public final class BetonQuestQT extends JavaPlugin {
 
         registerEvents(betonQuest);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Config.getPackages().forEach((id, questPackage) -> {
-                    QuestPlaceholder.packageByNameMap.clear();
-
-                    if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-                    QuestPlaceholder.packageByNameMap.put(id, questPackage);
-                });
-            }
-        }.runTaskTimer(this, 20*60*1, 0);
-
-
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
             new QuestStatus().register(); //
         }
+
+        Config.getPackages().forEach((id, questPackage) -> {
+            if(!questPackage.getTemplates().contains("trackedQuest")){return;}
+            QuestPlaceholder.packageByNameMap.put(id, questPackage);
+        });
 
         Bukkit.getPluginManager().registerEvents(new GUIListener(guiManager), this);
         Bukkit.getPluginManager().registerEvents(new Events(), this);
@@ -73,6 +65,7 @@ public final class BetonQuestQT extends JavaPlugin {
         CommandHandler commandHandler = new CommandHandler(this);
 
         getCommand("QuestMenu").setExecutor(commandHandler);
+        getCommand("Reload").setExecutor(commandHandler);
 
         setup();
         updateConfig();
@@ -86,6 +79,15 @@ public final class BetonQuestQT extends JavaPlugin {
             });
         }
         DataBaseManager.disconnectFromDB();
+    }
+
+    public void reload(){
+        QuestPlaceholder.packageByNameMap.clear();
+
+        Config.getPackages().forEach((id, questPackage) -> {
+            if(!questPackage.getTemplates().contains("trackedQuest")){return;}
+            QuestPlaceholder.packageByNameMap.put(id, questPackage);
+        });
     }
 
     public void registerEvents(BetonQuest betonQuest){

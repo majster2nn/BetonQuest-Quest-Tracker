@@ -1,6 +1,7 @@
 package majster2nn.dev.betonQuestQT.Tracker;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,6 +27,14 @@ public class CommandHandler implements CommandExecutor {
             // Open the GUI
             plugin.guiManager.openGui(new QuestMenu(plugin.getTranslation("header", player)), player);
             return true;
+        }
+        if(command.getName().equalsIgnoreCase("reload")){
+            if(sender.hasPermission("bqqt.restart")) {
+                BetonQuestQT.getInstance().reload();
+                return true;
+            }else{
+                sender.sendMessage(NamedTextColor.RED + "You dont have permission to use this command!!!");
+            }
         }
         return true;
     }
