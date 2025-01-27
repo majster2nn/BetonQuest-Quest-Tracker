@@ -28,8 +28,6 @@ public class QuestStatus extends PlaceholderExpansion {
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (player.isOnline() && player instanceof Player) {
-            System.out.println(QuestPlaceholder.packageStatusesMap.get(player));
-            System.out.println(QuestPlaceholder.packageByNameMap.get(params));
             return QuestPlaceholder.packageStatusesMap.getOrDefault(player.getPlayer(), new HashMap<>() {{
                 put(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED);
             }}).getOrDefault(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED).toString();
@@ -39,8 +37,6 @@ public class QuestStatus extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        System.out.println(QuestPlaceholder.packageStatusesMap.get(player));
-        System.out.println(QuestPlaceholder.packageByNameMap.get(params));
         return QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>() {{
             put(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED);
         }}).getOrDefault(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED).toString();

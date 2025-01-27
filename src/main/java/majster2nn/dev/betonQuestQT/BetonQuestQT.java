@@ -28,7 +28,7 @@ import java.io.File;
 public final class BetonQuestQT extends JavaPlugin {
     public File config;
     public FileConfiguration configData;
-    public double version = 0.2;
+    public double version = 0.3;
     public GUIManager guiManager;
     private BetonQuestLoggerFactory loggerFactory;
 
