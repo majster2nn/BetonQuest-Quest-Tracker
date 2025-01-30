@@ -87,6 +87,7 @@ public class QuestPlaceholder {
                 break;
             }
             case FINISHED:{
+                loreComponents.clear();
                 loreComponents.add(Component
                         .text(BetonQuestQT.getInstance().getTranslation("quest_finished", player))
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)

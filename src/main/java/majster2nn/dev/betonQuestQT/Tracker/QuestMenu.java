@@ -129,7 +129,7 @@ public class QuestMenu extends MultiPageInventoryGUI {
 
         sortedQuests.forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            if(playerTags.contains(questPackage + ".questUnavailable")){return;}
+            if(!playerTags.contains(questPackage + ".questTrackable")){return;}
 
 
             QuestPlaceholder questPlaceholder = new QuestPlaceholder(
