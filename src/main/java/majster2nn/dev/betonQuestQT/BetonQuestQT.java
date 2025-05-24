@@ -1,6 +1,5 @@
 package majster2nn.dev.betonQuestQT;
 
-
 import majster2nn.dev.betonQuestQT.Database.DataBaseManager;
 import majster2nn.dev.betonQuestQT.Events.Events;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIListener;
@@ -13,14 +12,11 @@ import majster2nn.dev.betonQuestQT.Tracker.Placeholders.QuestStatus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.config.Config;
-import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -54,7 +50,7 @@ public final class BetonQuestQT extends JavaPlugin {
             new QuestStatus().register(); //
         }
 
-        Config.getPackages().forEach((id, questPackage) -> {
+        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageByNameMap.put(id, questPackage);
         });
@@ -74,7 +70,7 @@ public final class BetonQuestQT extends JavaPlugin {
     @Override
     public void onDisable() {
         for(Player player : Bukkit.getOnlinePlayers()){
-            Config.getPackages().forEach((id, questPackage) -> {
+            BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
                 DataBaseManager.setQuestPackage(id, player.getUniqueId().toString(), QuestPlaceholder.packageStatusesMap.get(player).get(questPackage));
             });
         }
@@ -84,16 +80,16 @@ public final class BetonQuestQT extends JavaPlugin {
     public void reload(){
         QuestPlaceholder.packageByNameMap.clear();
 
-        Config.getPackages().forEach((id, questPackage) -> {
+        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageByNameMap.put(id, questPackage);
         });
     }
 
     public void registerEvents(BetonQuest betonQuest){
-        betonQuest.getQuestRegistries().getEventTypes().register("lockQuest", new LockQuestFactory(loggerFactory));
-        betonQuest.getQuestRegistries().getEventTypes().register("activeQuest", new ActiveQuestFactory(loggerFactory));
-        betonQuest.getQuestRegistries().getEventTypes().register("finishQuest", new FinishQuestFactory(loggerFactory));
+        betonQuest.getQuestRegistries().event().register("lockQuest", new LockQuestFactory(loggerFactory));
+        betonQuest.getQuestRegistries().event().register("activeQuest", new ActiveQuestFactory(loggerFactory));
+        betonQuest.getQuestRegistries().event().register("finishQuest", new FinishQuestFactory(loggerFactory));
     }
 
     public static BetonQuestQT getInstance(){
@@ -140,6 +136,6 @@ public final class BetonQuestQT extends JavaPlugin {
     public String getTranslation(String part, Player player){
         return configData.getString(
                 "menuTranslations." + part +
-                        "." + BetonQuest.getInstance().getPlayerData(PlayerConverter.getID(player)).getLanguage());
+                        "." + BetonQuest.getInstance().getPlayerDataStorage().get(BetonQuest.getInstance().getProfileProvider().getProfile(player)).getLanguage().get());
     }
 }

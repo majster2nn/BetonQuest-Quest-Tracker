@@ -2,7 +2,7 @@ package majster2nn.dev.betonQuestQT.Events;
 
 import majster2nn.dev.betonQuestQT.Database.DataBaseManager;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
-import org.betonquest.betonquest.config.Config;
+import org.betonquest.betonquest.BetonQuest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +16,7 @@ public class Events implements Listener {
     public void onJoin(PlayerJoinEvent e){
         Player player = e.getPlayer();
 
-        Config.getPackages().forEach((id, questPackage) -> {
+        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, k -> new HashMap<>())
                     .put(questPackage, QuestPlaceholder.Statuses.valueOf(
@@ -29,7 +29,7 @@ public class Events implements Listener {
     public void onLeave(PlayerQuitEvent e){
         Player player = e.getPlayer();
 
-        Config.getPackages().forEach((id, questPackage) -> {
+        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             DataBaseManager.setQuestPackage(id, player.getUniqueId().toString(), QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, QuestPlaceholder.Statuses.LOCKED));
         });

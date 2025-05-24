@@ -5,21 +5,14 @@ import majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsHandlers;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.profiles.Profile;
-import org.betonquest.betonquest.config.Config;
+import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
-import org.betonquest.betonquest.utils.PlayerConverter;
-import org.betonquest.betonquest.variables.GlobalVariableResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -111,11 +104,11 @@ public class QuestMenu extends MultiPageInventoryGUI {
     public void setQuestButtons(Player player){
         final int[] currentSlot = {9};
         final int[] currentPage = {1};
-        Profile profile = PlayerConverter.getID(player);
-        PlayerData playerData = BetonQuest.getInstance().getPlayerData(profile);
+        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+        PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
         List<String> playerTags = playerData.getTags();
 
-        Map<String, QuestPackage> mappedQuests = Config.getPackages();
+        Map<String, QuestPackage> mappedQuests = BetonQuest.getInstance().getPackages();
         Map<String, QuestPackage> sortedQuests = mappedQuests.entrySet()
                 .stream()
                 .parallel()
@@ -135,10 +128,10 @@ public class QuestMenu extends MultiPageInventoryGUI {
             QuestPlaceholder questPlaceholder = new QuestPlaceholder(
                     new ItemStack(Material.matchMaterial(questPackage.getConfig().getString("questParameters.questDisplay"))),
                     !questPackage.getConfig().getConfigurationSection("questParameters.questName").getKeys(false).isEmpty()
-                            ? questPackage.getConfig().getConfigurationSection("questParameters.questName").getString(BetonQuest.getInstance().getPlayerData(PlayerConverter.getID(player)).getLanguage())
+                            ? questPackage.getConfig().getConfigurationSection("questParameters.questName").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get())
                             : questPackage.getConfig().getConfigurationSection("questParameters").getString("questName"),
                     !questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getKeys(false).isEmpty()
-                            ? questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getString(BetonQuest.getInstance().getPlayerData(PlayerConverter.getID(player)).getLanguage())
+                            ? questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get())
                             : questPackage.getConfig().getConfigurationSection("questParameters").getString("questDesc"),
                     player,
                     questPackage

@@ -2,7 +2,7 @@ package majster2nn.dev.betonQuestQT.Database;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder.*;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ public class DataBaseManager {
         String status = "LOCKED";
         try {
             ResultSet rs = stmt.executeQuery("SELECT STATUS FROM " + userDataTable + " WHERE UUID = '" + uuid + "'" + " AND QUEST = '" + packageId + "'");
-            status = rs.getString("STATUS");
+            status = rs.getString("STATUS") != null ? rs.getString("STATUS") : "LOCKED";
         } catch (SQLException ignored){
 
         }

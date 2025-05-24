@@ -7,10 +7,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.exceptions.InstructionParseException;
-import org.betonquest.betonquest.utils.PlayerConverter;
-import org.betonquest.betonquest.variables.GlobalVariableResolver;
-import org.bukkit.Material;
+import org.betonquest.betonquest.api.quest.QuestException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,16 +43,21 @@ public class QuestPlaceholder {
         ACTIVE
     }
 
-    public QuestPlaceholder(@NotNull ItemStack display,@NotNull String name,@NotNull String lore,@NotNull Player player,@NotNull QuestPackage questPackage){
+    public QuestPlaceholder(@NotNull ItemStack display,@NotNull String name,@NotNull String lore,@NotNull Player player,@NotNull QuestPackage questPackage) {
         this.displayMaterial = display;
         this.name = name;
         this.lore = lore;
         this.player = player;
         this.questPackage = questPackage;
-        setQuestDisplay();
+        try {
+            setQuestDisplay();
+        } catch (QuestException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    public void setQuestDisplay(){
+    public void setQuestDisplay() throws QuestException {
         ItemMeta questDisplayMeta = displayMaterial.getItemMeta();
 
         String formattedName = formatLineWithVariables(name);
@@ -117,7 +119,7 @@ public class QuestPlaceholder {
         return questDisplay;
     }
 
-    public String formatLineWithVariables(String line) {
+    public String formatLineWithVariables(String line) throws QuestException {
         StringBuilder formattedString = new StringBuilder();
         StringBuilder preFormatVariable = new StringBuilder();
         StringBuilder preFormatGlobalVariable = new StringBuilder();
@@ -134,9 +136,9 @@ public class QuestPlaceholder {
                         caughtGlobalVariable = false;
                         preFormatGlobalVariable.append("$");
                         if(caughtVariable){
-                            preFormatVariable.append(GlobalVariableResolver.resolve(questPackage, preFormatGlobalVariable.toString()));
+                            preFormatVariable.append(BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatGlobalVariable.toString(), null));
                         }else{
-                            formattedString.append(GlobalVariableResolver.resolve(questPackage, preFormatGlobalVariable.toString()));
+                            formattedString.append(BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatGlobalVariable.toString(), null));
                         }
                         preFormatGlobalVariable = new StringBuilder();
                     }
@@ -151,9 +153,9 @@ public class QuestPlaceholder {
                         preFormatVariable.append("%");
                         try {
                             formattedString.append(
-                                    BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatVariable.toString(), PlayerConverter.getID(player)));
-                        } catch (InstructionParseException e) {
-                            BetonQuestQT.getInstance().getLogger().severe("Failed to process variable: " + preFormatVariable);
+                                    BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatVariable.toString(), BetonQuest.getInstance().getProfileProvider().getProfile(player)));
+                        } catch (QuestException e) {
+                            throw new RuntimeException(e);
                         }
                         preFormatVariable = new StringBuilder();
                     }
