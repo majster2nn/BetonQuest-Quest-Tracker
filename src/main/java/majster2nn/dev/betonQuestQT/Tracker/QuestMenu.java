@@ -12,6 +12,7 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -65,8 +66,10 @@ public class QuestMenu extends MultiPageInventoryGUI {
                         case 46:{
                             display = new ItemStack(HeadsHandlers.getHead(getLeftScrollButton()));
                             ItemMeta meta = display.getItemMeta();
+                            String label = BetonQuestQT.getInstance().getTranslation("prevP", player);
+                            if (label == null || label.isEmpty()) label = "←";
                             meta.displayName(Component
-                                    .text(BetonQuestQT.getInstance().getTranslation("prevP", player))
+                                    .text(label)
                                     .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE));
                             display.setItemMeta(meta);
                             break;
@@ -74,8 +77,10 @@ public class QuestMenu extends MultiPageInventoryGUI {
                         case 52:{
                             display = new ItemStack(HeadsHandlers.getHead(getRightScrollButton()));
                             ItemMeta meta = display.getItemMeta();
+                            String label = BetonQuestQT.getInstance().getTranslation("nextP", player);
+                            if (label == null || label.isEmpty()) label = "→";
                             meta.displayName(Component
-                                    .text(BetonQuestQT.getInstance().getTranslation("nextP", player))
+                                    .text(label)
                                     .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE));
                             display.setItemMeta(meta);
                             break;
