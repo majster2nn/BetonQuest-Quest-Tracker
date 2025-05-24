@@ -1,24 +1,30 @@
 menuTranslations:
   header:
-    en: "Quests"
-    pl: "Zadania"
+    en-US: "Quests"
+    pl-PL: "Zadania"
+    fr-FR: "Quêtes"
 
   nextP:
-    en: "Next Page"
-    pl: "Kolejna Strona"
+    en-US: "Next Page"
+    pl-PL: "Kolejna Strona"
+    fr-FR: "Page Suivante"
 
   prevP:
-    en: "Previous Page"
-    pl: "Poprzednia Strona"
+    en-US: "Previous Page"
+    pl-PL: "Poprzednia Strona"
+    fr-FR: "Page Précédente"
 
   quest_active:
-    en: "Active"
-    pl: "Aktywne"
+    en-US: "Active"
+    pl-PL: "Aktywne"
+    fr-FR: "Active"
 
   quest_finished:
-    en: "Finished"
-    pl: "Ukończone"
+    en-US: "Finished"
+    pl-PL: "Ukończone"
+    fr-FR: "Terminé"
 
   quest_locked:
-    en: "Locked"
-    pl: "Zablokowane"
+    en-US: "Locked"
+    pl-PL: "Zablokowane"
+    fr-FR: "Bloqué"

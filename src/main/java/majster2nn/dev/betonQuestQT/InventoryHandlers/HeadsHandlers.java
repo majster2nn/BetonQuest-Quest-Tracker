@@ -1,41 +1,35 @@
+
 package majster2nn.dev.betonQuestQT.InventoryHandlers;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 public class HeadsHandlers {
 
-    public static ItemStack getHead(String value) {
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
-
-        if (value == null || value.isEmpty()) {
-            return head;  // Return the default head if no value is provided
-        }
-
+    public static ItemStack getHead(String skinName) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
-        if (meta == null) {
-            return head;  // In case the meta is null for some reason, return the default head
+
+        if (meta != null) {
+            // Remplacer par un nom valide si null ou trop long
+            if (skinName == null || skinName.isEmpty()) {
+                skinName = "MHF_Question";
+            }
+
+            if (skinName.length() > 16) {
+                skinName = skinName.substring(0, 16);
+            }
+
+            PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID(), skinName);
+            meta.setOwnerProfile(profile);
+            head.setItemMeta(meta);
         }
 
-        // Use a placeholder name if the actual name is not necessary
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "Head");
-
-        profile.getProperties().put("textures", new Property("textures", value));
-        try {
-            Field field = meta.getClass().getDeclaredField("profile");
-            field.setAccessible(true);
-            field.set(meta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex) {
-            ex.printStackTrace();
-        }
-
-        head.setItemMeta(meta);
         return head;
     }
 }

@@ -133,9 +133,17 @@ public final class BetonQuestQT extends JavaPlugin {
         return this.configData;
     }
 
-    public String getTranslation(String part, Player player){
-        return configData.getString(
-                "menuTranslations." + part +
-                        "." + BetonQuest.getInstance().getPlayerDataStorage().get(BetonQuest.getInstance().getProfileProvider().getProfile(player)).getLanguage().get());
+    public String getTranslation(String part, Player player) {
+        String lang = "en-US";
+
+        try {
+            lang = BetonQuest.getInstance().getConfig().getString("language", "en-US");
+        } catch (Exception ignored) {}
+
+        String path = "menuTranslations." + part + "." + lang;
+
+        String result = configData.getString(path);
+
+        return (result != null && !result.isEmpty()) ? result : "???";
     }
 }
