@@ -12,7 +12,6 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -127,22 +126,24 @@ public class QuestMenu extends MultiPageInventoryGUI {
 
         sortedQuests.forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            if(!playerTags.contains(questPackage + ".questTrackable")){return;}
+            if(!playerTags.contains(questPackage + ".questTrackable")){return;}// TODO CHANGE IT FROM TAG TO ENUM HIDDEN
 
 
             questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getKeys(false);
             questPackage.getConfig().getConfigurationSection("questParameters.questName").getKeys(false);
             QuestPlaceholder questPlaceholder = new QuestPlaceholder(
-                    new ItemStack(Material.matchMaterial(questPackage.getConfig().getString("questParameters.questDisplay"))),
+                    new ItemStack(Material.DIRT),
                     questPackage.getConfig().getConfigurationSection("questParameters.questName").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get()),
                     questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get()),
                     player,
                     questPackage
             );
 
+            //TODO DYNAMICZNY OPIS W ZALEŻNOŚCI OD WARUNKU CZYLI KASKADOWE SPRAWDZANIE JAK W BETONQUEŚCIE
+
 
             this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
-                    .creator(player1 -> questPlaceholder.getQuestDisplay())
+                    .creator(_ -> questPlaceholder.getQuestDisplay())
                     .consumer(e -> {
                         e.setCancelled(true);
                     })

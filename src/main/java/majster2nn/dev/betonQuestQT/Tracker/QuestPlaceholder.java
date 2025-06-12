@@ -40,7 +40,8 @@ public class QuestPlaceholder {
     public enum Statuses{
         FINISHED,
         LOCKED,
-        ACTIVE
+        ACTIVE,
+        HIDDEN
     }
 
     public QuestPlaceholder(@NotNull ItemStack display,@NotNull String name,@NotNull String lore,@NotNull Player player,@NotNull QuestPackage questPackage) {
@@ -131,10 +132,10 @@ public class QuestPlaceholder {
                 case "$": {
                     if (!caughtGlobalVariable) {
                         caughtGlobalVariable = true;
-                        preFormatGlobalVariable.append("$");
+                        preFormatGlobalVariable.append("%");
                     } else {
                         caughtGlobalVariable = false;
-                        preFormatGlobalVariable.append("$");
+                        preFormatGlobalVariable.append("%");
                         if(caughtVariable){
                             preFormatVariable.append(BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatGlobalVariable.toString(), null));
                         }else{

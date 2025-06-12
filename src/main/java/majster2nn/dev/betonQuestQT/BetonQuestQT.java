@@ -19,6 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class BetonQuestQT extends JavaPlugin {
     public File config;
@@ -57,11 +61,6 @@ public final class BetonQuestQT extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GUIListener(guiManager), this);
         Bukkit.getPluginManager().registerEvents(new Events(), this);
 
-        //CommandHandler commandHandler = new CommandHandler(this);
-
-//        getCommand("QuestMenu").setExecutor(commandHandler);
-//        getCommand("Reload").setExecutor(commandHandler);
-
         setup();
         updateConfig();
     }
@@ -69,9 +68,22 @@ public final class BetonQuestQT extends JavaPlugin {
     @Override
     public void onDisable() {
         for(Player player : Bukkit.getOnlinePlayers()){
+            Map<String, List<String>> statusesMap = new HashMap<>();
+
             BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
-                DataBaseManager.setQuestPackage(id, player.getUniqueId().toString(), QuestPlaceholder.packageStatusesMap.get(player).get(questPackage));
+                if(!questPackage.getTemplates().contains("trackedQuest")){return;}
+
+                QuestPlaceholder.Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, QuestPlaceholder.Statuses.LOCKED);
+                switch (status) {
+                    case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", _ -> new ArrayList<>()).add(id);
+                    case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", _ -> new ArrayList<>()).add(id);
+                    case FINISHED -> statusesMap.computeIfAbsent("finishedQuests", _ -> new ArrayList<>()).add(id);
+                }
             });
+
+            for(String key : statusesMap.keySet()){
+                DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
+            }
         }
         DataBaseManager.disconnectFromDB();
     }

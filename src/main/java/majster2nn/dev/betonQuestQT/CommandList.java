@@ -1,7 +1,6 @@
 package majster2nn.dev.betonQuestQT;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import majster2nn.dev.betonQuestQT.Tracker.QuestMenu;
 import org.bukkit.entity.Player;
@@ -9,6 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("UnstableApiUsage")
 public class CommandList {
     BetonQuestQT plugin;
     public List<LiteralCommandNode> commandBuilders(){
@@ -30,8 +30,8 @@ public class CommandList {
 
         commands.add(Commands.literal("bqqt")
                 .requires(sender -> sender.getSender().hasPermission("bqqt.admin"))
-                .then(Commands.literal("restart")
-                        .executes(ctx -> {
+                .then(Commands.literal("reload")
+                        .executes(_ -> {
                             plugin = BetonQuestQT.getInstance();
                             try{
                                 plugin.reload();
