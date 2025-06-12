@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@Deprecated(since = "Latest DEV version", forRemoval = true)
 public class CommandHandler implements CommandExecutor {
     BetonQuestQT plugin;
 

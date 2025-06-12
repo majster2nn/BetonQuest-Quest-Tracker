@@ -7,7 +7,6 @@ import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIManager;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.ActiveQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.FinishQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.LockQuestFactory;
-import majster2nn.dev.betonQuestQT.Tracker.CommandHandler;
 import majster2nn.dev.betonQuestQT.Tracker.Placeholders.QuestStatus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import org.betonquest.betonquest.BetonQuest;
@@ -58,10 +57,10 @@ public final class BetonQuestQT extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GUIListener(guiManager), this);
         Bukkit.getPluginManager().registerEvents(new Events(), this);
 
-        CommandHandler commandHandler = new CommandHandler(this);
+        //CommandHandler commandHandler = new CommandHandler(this);
 
-        getCommand("QuestMenu").setExecutor(commandHandler);
-        getCommand("Reload").setExecutor(commandHandler);
+//        getCommand("QuestMenu").setExecutor(commandHandler);
+//        getCommand("Reload").setExecutor(commandHandler);
 
         setup();
         updateConfig();

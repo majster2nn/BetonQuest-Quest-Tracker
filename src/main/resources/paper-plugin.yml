@@ -1,0 +1,12 @@
+name: BetonQuestQT
+version: '0.1'
+main: majster2nn.dev.betonQuestQT.BetonQuestQT
+api-version: '1.21.3'
+bootstrapper: majster2nn.dev.betonQuestQT.Bootstrap
+
+dependencies:
+  server:
+    BetonQuest:
+      load: BEFORE
+      required: true
+      join-classpath: true # Defaults to true

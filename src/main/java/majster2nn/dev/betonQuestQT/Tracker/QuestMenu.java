@@ -130,14 +130,12 @@ public class QuestMenu extends MultiPageInventoryGUI {
             if(!playerTags.contains(questPackage + ".questTrackable")){return;}
 
 
+            questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getKeys(false);
+            questPackage.getConfig().getConfigurationSection("questParameters.questName").getKeys(false);
             QuestPlaceholder questPlaceholder = new QuestPlaceholder(
                     new ItemStack(Material.matchMaterial(questPackage.getConfig().getString("questParameters.questDisplay"))),
-                    !questPackage.getConfig().getConfigurationSection("questParameters.questName").getKeys(false).isEmpty()
-                            ? questPackage.getConfig().getConfigurationSection("questParameters.questName").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get())
-                            : questPackage.getConfig().getConfigurationSection("questParameters").getString("questName"),
-                    !questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getKeys(false).isEmpty()
-                            ? questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get())
-                            : questPackage.getConfig().getConfigurationSection("questParameters").getString("questDesc"),
+                    questPackage.getConfig().getConfigurationSection("questParameters.questName").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get()),
+                    questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get()),
                     player,
                     questPackage
             );
