@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandList {
+    BetonQuestQT plugin;
     public List<LiteralCommandNode> commandBuilders(){
         List<LiteralCommandNode> commands = new ArrayList<>();
-        BetonQuestQT plugin = BetonQuestQT.getInstance();
 
         commands.add(Commands.literal("questmenu")
                 .executes(ctx -> {
+                    plugin = BetonQuestQT.getInstance();
                     if (!(ctx.getSource().getSender() instanceof Player player)) {
                         ctx.getSource().getSender().sendMessage("You can only use this command in game as a player!");
                         return 0;
@@ -27,10 +28,11 @@ public class CommandList {
                 .build()
         );
 
-        commands.add(Commands.literal("bq")
+        commands.add(Commands.literal("bqqt")
                 .requires(sender -> sender.getSender().hasPermission("bqqt.admin"))
                 .then(Commands.literal("restart")
                         .executes(ctx -> {
+                            plugin = BetonQuestQT.getInstance();
                             try{
                                 plugin.reload();
                                 return 1;
