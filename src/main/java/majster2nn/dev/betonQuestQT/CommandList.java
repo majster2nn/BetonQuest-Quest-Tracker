@@ -23,7 +23,7 @@ public class CommandList {
                         return 0;
                     }
 
-                    plugin.guiManager.openGui(new QuestMenu(plugin.getTranslation("header", player), plugin), player);
+                    plugin.guiManager.openGui(new MainQuestMenu(plugin.getTranslation("main-menu", player)), player);
                     return 1;
                 })
                 .build()
@@ -41,13 +41,6 @@ public class CommandList {
                                 plugin.getLogger().severe(e.getMessage());
                                 return 0;
                             }
-                        }))
-                .then(Commands.literal("test")
-                        .executes(ctx -> {
-                            plugin = BetonQuestQT.getInstance();
-                            if(!(ctx.getSource().getSender() instanceof Player player)) return 0;
-                            plugin.guiManager.openGui(new MainQuestMenu(plugin.getTranslation("main-menu", player)), player);
-                            return 1;
                         }))
                 .build()
         );

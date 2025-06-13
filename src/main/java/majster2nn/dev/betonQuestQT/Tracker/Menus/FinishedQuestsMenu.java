@@ -1,5 +1,6 @@
 package majster2nn.dev.betonQuestQT.Tracker.Menus;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsHandlers;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
@@ -17,6 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.HashMap;
 
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScrollButton;
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
@@ -43,6 +46,7 @@ public class FinishedQuestsMenu extends MultiPageInventoryGUI {
 
         this.addButton(46, -1, scrollButtons(46));
         this.addButton(52, -1, scrollButtons(52));
+        this.addButton(53, -1, backButton());
 
         super.decorate(player);
     }
@@ -100,6 +104,18 @@ public class FinishedQuestsMenu extends MultiPageInventoryGUI {
                     e.setCancelled(true);
                 });
     }
+    private InventoryButton backButton(){
+        return new InventoryButton()
+                .creator(p -> {
+                    ItemStack display = new ItemStack(Material.ARROW);
+                    display.setData(DataComponentTypes.CUSTOM_NAME, Component.text("Back"));
+                    return display;
+                })
+                .consumer(e -> {
+                    Player player = (Player) e.getWhoClicked();
+                    BetonQuestQT.getInstance().guiManager.openGui(new MainQuestMenu(BetonQuestQT.getInstance().getTranslation("main-menu", player)), player);
+                });
+    }
     //TODO DYNAMIC DESCRIPTION BASED OFF CONDITION CHECKING LIKE IN BETONQUEST
     public void setQuestButtons(Player player){
         final int[] currentSlot = {9};
@@ -144,7 +160,8 @@ public class FinishedQuestsMenu extends MultiPageInventoryGUI {
                             questPackage
                     );
 
-                    if(!QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.HIDDEN).equals(Statuses.FINISHED)){
+                    if(!QuestPlaceholder.packagesByCategory.getOrDefault(questPackage, "none").equalsIgnoreCase("finished") ||
+                        QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN).equals(Statuses.HIDDEN)){
                         return;
                     }
 

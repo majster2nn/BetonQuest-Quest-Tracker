@@ -1,5 +1,7 @@
 package majster2nn.dev.betonQuestQT.Tracker.Menus;
 
+import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsHandlers;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
@@ -20,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +52,7 @@ public class MainQuestsMenu extends MultiPageInventoryGUI {
 
         this.addButton(46, -1, scrollButtons(46));
         this.addButton(52, -1, scrollButtons(52));
+        this.addButton(53, -1, backButton());
 
         super.decorate(player);
     }
@@ -106,6 +110,18 @@ public class MainQuestsMenu extends MultiPageInventoryGUI {
                     e.setCancelled(true);
                 });
     }
+    private InventoryButton backButton(){
+        return new InventoryButton()
+                .creator(p -> {
+                    ItemStack display = new ItemStack(Material.ARROW);
+                    display.setData(DataComponentTypes.CUSTOM_NAME, Component.text("Back"));
+                    return display;
+                })
+                .consumer(e -> {
+                    Player player = (Player) e.getWhoClicked();
+                    BetonQuestQT.getInstance().guiManager.openGui(new MainQuestMenu(BetonQuestQT.getInstance().getTranslation("main-menu", player)), player);
+                });
+    }
     //TODO DYNAMIC DESCRIPTION BASED OFF CONDITION CHECKING LIKE IN BETONQUEST
     public void setQuestButtons(Player player){
         final int[] currentSlot = {9};
@@ -151,7 +167,8 @@ public class MainQuestsMenu extends MultiPageInventoryGUI {
                             questPackage
                     );
 
-                    if(!QuestPlaceholder.packagesByCategory.getOrDefault(questPackage, "none").equalsIgnoreCase("main")){
+                    if(!QuestPlaceholder.packagesByCategory.getOrDefault(questPackage, "none").equalsIgnoreCase("main") ||
+                        QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN).equals(Statuses.HIDDEN)){
                         return;
                     }
 
@@ -166,6 +183,7 @@ public class MainQuestsMenu extends MultiPageInventoryGUI {
                     }
                 });
     }
+
 
     String getSafeString(ConfigurationSection base, String path, String langKey) {
         ConfigurationSection section = base.getConfigurationSection(path);
