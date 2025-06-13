@@ -114,6 +114,7 @@ public class MainQuestsMenu extends MultiPageInventoryGUI {
         QuestPlaceholder.packageByName
                 //TODO ADD SORTING AND FILTERING (.sorted, .filter)
                 .forEach((id, questPackage) -> {
+                    //TODO EXTRACT IT TO A FUNCTION, YOU CAN DO IT WITH A func(id, questPackage) AND COPY PASTE ALL OF THIS CODE
                     if (!questPackage.getTemplates().contains("trackedQuest")) {
                         return;
                     }

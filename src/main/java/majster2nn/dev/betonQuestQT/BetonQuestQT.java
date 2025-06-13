@@ -6,6 +6,7 @@ import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIListener;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIManager;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.ActiveQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.FinishQuestFactory;
+import majster2nn.dev.betonQuestQT.Tracker.BQEvents.HideQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.LockQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.Placeholders.QuestStatus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
@@ -102,6 +103,7 @@ public final class BetonQuestQT extends JavaPlugin {
         betonQuest.getQuestRegistries().event().register("lockQuest", new LockQuestFactory(loggerFactory));
         betonQuest.getQuestRegistries().event().register("activeQuest", new ActiveQuestFactory(loggerFactory));
         betonQuest.getQuestRegistries().event().register("finishQuest", new FinishQuestFactory(loggerFactory));
+        betonQuest.getQuestRegistries().event().register("hideQuest", new HideQuestFactory(loggerFactory));
     }
 
     public static BetonQuestQT getInstance(){
