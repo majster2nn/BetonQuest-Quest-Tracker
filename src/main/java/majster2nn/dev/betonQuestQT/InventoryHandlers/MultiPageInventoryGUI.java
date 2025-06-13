@@ -12,8 +12,7 @@ public abstract class MultiPageInventoryGUI extends InventoryGUI{
     public HashMap<Integer, String> pageNameMap = new HashMap<>();
 
     public MultiPageInventoryGUI(String invName){
-        this.name = invName;
-        this.inventory = this.createInventory(name);
+        super(invName);
     }
 
     public void addButton(int slot, int page, InventoryButton button) {

@@ -13,10 +13,11 @@ import java.util.Map;
 
 public abstract class InventoryGUI implements InventoryHandler{
     protected Inventory inventory;
-    public String name = "";
+    public String name;
     protected Map<Integer, InventoryButton> buttonMap = new HashMap<>();
 
-    public InventoryGUI() {
+    public InventoryGUI(String invName) {
+        this.name = invName;
         this.inventory = this.createInventory(name);
     }
 

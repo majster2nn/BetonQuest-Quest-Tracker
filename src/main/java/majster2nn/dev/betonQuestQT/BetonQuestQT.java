@@ -9,6 +9,7 @@ import majster2nn.dev.betonQuestQT.Tracker.BQEvents.FinishQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.LockQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.Placeholders.QuestStatus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.bukkit.Bukkit;
@@ -55,7 +56,7 @@ public final class BetonQuestQT extends JavaPlugin {
 
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            QuestPlaceholder.packageByNameMap.put(id, questPackage);
+            QuestPlaceholder.packageByName.put(id, questPackage);
         });
 
         Bukkit.getPluginManager().registerEvents(new GUIListener(guiManager), this);
@@ -73,11 +74,11 @@ public final class BetonQuestQT extends JavaPlugin {
             BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
                 if(!questPackage.getTemplates().contains("trackedQuest")){return;}
 
-                QuestPlaceholder.Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, QuestPlaceholder.Statuses.LOCKED);
+                Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.LOCKED);
                 switch (status) {
-                    case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", _ -> new ArrayList<>()).add(id);
-                    case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", _ -> new ArrayList<>()).add(id);
-                    case FINISHED -> statusesMap.computeIfAbsent("finishedQuests", _ -> new ArrayList<>()).add(id);
+                    case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
+                    case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);
+                    case FINISHED -> statusesMap.computeIfAbsent("finishedQuests", x -> new ArrayList<>()).add(id);
                 }
             });
 
@@ -89,11 +90,11 @@ public final class BetonQuestQT extends JavaPlugin {
     }
 
     public void reload(){
-        QuestPlaceholder.packageByNameMap.clear();
+        QuestPlaceholder.packageByName.clear();
 
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            QuestPlaceholder.packageByNameMap.put(id, questPackage);
+            QuestPlaceholder.packageByName.put(id, questPackage);
         });
     }
 

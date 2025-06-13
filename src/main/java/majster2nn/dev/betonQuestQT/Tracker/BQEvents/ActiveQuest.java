@@ -1,6 +1,7 @@
 package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
 
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -22,7 +23,7 @@ public class ActiveQuest implements OnlineEvent {
     @Override
     public void execute(OnlineProfile onlineProfile) throws QuestException {
         Player player = onlineProfile.getPlayer().getPlayer();
-        QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, _ -> new HashMap<>())
-                .put(questPackage, QuestPlaceholder.Statuses.ACTIVE);
+        QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
+                .put(questPackage, Statuses.ACTIVE);
     }
 }

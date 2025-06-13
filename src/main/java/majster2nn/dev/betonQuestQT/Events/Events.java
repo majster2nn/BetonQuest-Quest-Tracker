@@ -2,6 +2,7 @@ package majster2nn.dev.betonQuestQT.Events;
 
 import majster2nn.dev.betonQuestQT.Database.DataBaseManager;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import org.betonquest.betonquest.BetonQuest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,21 +20,21 @@ public class Events implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
         Player player = e.getPlayer();
-        Map<String, QuestPlaceholder.Statuses> statusesMap = new HashMap<>();
+        Map<String, Statuses> statusesMap = new HashMap<>();
         for(String key : DataBaseManager.getValueOfCellInUserTable("activeQuests", player).split(",")){
-            statusesMap.put(key, QuestPlaceholder.Statuses.ACTIVE);
+            statusesMap.put(key, Statuses.ACTIVE);
         }
         for(String key : DataBaseManager.getValueOfCellInUserTable("lockedQuests", player).split(",")){
-            statusesMap.put(key, QuestPlaceholder.Statuses.LOCKED);
+            statusesMap.put(key, Statuses.LOCKED);
         }
         for(String key : DataBaseManager.getValueOfCellInUserTable("finishedQuests", player).split(",")){
-            statusesMap.put(key, QuestPlaceholder.Statuses.FINISHED);
+            statusesMap.put(key, Statuses.FINISHED);
         }
 
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, k -> new HashMap<>())
-                    .put(questPackage, statusesMap.getOrDefault(id, QuestPlaceholder.Statuses.HIDDEN));
+            QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
+                    .put(questPackage, statusesMap.getOrDefault(id, Statuses.HIDDEN));
         });
     }
 
@@ -45,11 +46,11 @@ public class Events implements Listener {
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
 
-            QuestPlaceholder.Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, QuestPlaceholder.Statuses.LOCKED);
+            Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.LOCKED);
             switch (status) {
-                case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", _ -> new ArrayList<>()).add(id);
-                case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", _ -> new ArrayList<>()).add(id);
-                case FINISHED -> statusesMap.computeIfAbsent("finishedQuests", _ -> new ArrayList<>()).add(id);
+                case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
+                case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);
+                case FINISHED -> statusesMap.computeIfAbsent("finishedQuests", x -> new ArrayList<>()).add(id);
             }
         });
 

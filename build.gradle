@@ -38,8 +38,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = 22
-    targetCompatibility = 22
+    sourceCompatibility = 21
+    targetCompatibility = 21
 }
 
 tasks.withType(JavaCompile).configureEach {

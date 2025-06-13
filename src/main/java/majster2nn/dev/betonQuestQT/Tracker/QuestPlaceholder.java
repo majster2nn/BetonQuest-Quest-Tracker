@@ -7,52 +7,50 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QuestPlaceholder {
     public ItemStack displayMaterial;
     public String name;
     public String lore;
     public Statuses status = Statuses.LOCKED;
+    public String category;
     public Player player;
-    private QuestPackage questPackage;
+    private final QuestPackage questPackage;
 
     public static Map<Player, @NotNull HashMap<@NotNull QuestPackage, @NotNull Statuses>> packageStatusesMap = new HashMap<>();
-    public static Map<String, QuestPackage> packageByNameMap = new HashMap<>();
+    public static Map<String, QuestPackage> packageByName = new HashMap<>();
+    public static Map<QuestPackage, String> packagesByCategory = new HashMap<>();
+    public static List<String> tags = new ArrayList<>();
 
     public ItemStack questDisplay;
 
-    public enum QuestTypes{
-        MAIN_QUEST,
-        SIDE_QUEST,
-        EVENT_QUEST
-    }
-
-    public enum Statuses{
-        FINISHED,
-        LOCKED,
-        ACTIVE,
-        HIDDEN
-    }
-
-    public QuestPlaceholder(@NotNull ItemStack display,@NotNull String name,@NotNull String lore,@NotNull Player player,@NotNull QuestPackage questPackage) {
+    public QuestPlaceholder(
+            @NotNull ItemStack display,
+            @NotNull String name,
+            @NotNull String lore,
+            String category,
+            @NotNull Player player,
+            @NotNull QuestPackage questPackage) {
         this.displayMaterial = display;
         this.name = name;
         this.lore = lore;
+        this.category = category;
         this.player = player;
         this.questPackage = questPackage;
         try {
             setQuestDisplay();
-        } catch (QuestException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
@@ -77,9 +75,7 @@ public class QuestPlaceholder {
             );
         }
 
-        status = packageStatusesMap.getOrDefault(player, new HashMap<>() {{
-            put(questPackage, Statuses.LOCKED);
-        }}).getOrDefault(questPackage, Statuses.LOCKED);
+        status = packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN);
 
         switch(status){
             case ACTIVE:{
@@ -112,8 +108,18 @@ public class QuestPlaceholder {
 
         questDisplayMeta.lore(loreComponents);
 
-        questDisplay=displayMaterial;
+        questDisplay = displayMaterial;
         questDisplay.setItemMeta(questDisplayMeta);
+
+        if(status == Statuses.FINISHED){
+            packagesByCategory.put(questPackage, "finished");
+        }else{
+            switch(category){
+                case "main" -> packagesByCategory.put(questPackage, "main");
+                case "side" -> packagesByCategory.put(questPackage, "side");
+                case "other" -> packagesByCategory.put(questPackage, "other");
+            }
+        }
     }
 
     public ItemStack getQuestDisplay(){

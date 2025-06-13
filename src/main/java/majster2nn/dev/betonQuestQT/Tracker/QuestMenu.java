@@ -7,16 +7,20 @@ import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.bukkit.config.custom.multi.MultiConfiguration;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,8 +28,12 @@ import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScr
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
 
 public class QuestMenu extends MultiPageInventoryGUI {
-    public QuestMenu(String invName) {
+    private final BetonQuestQT plugin;
+
+    //TODO ADD MENU TYPES FOR ACTIVE LOCKED AND FINISHED QUESTS SO THEY ARE NOT IN ONE MENU AND FILTERED BUT RATHER IN SEPARATE MENUS SO SPLIT THIS MENU INTO 3 OR EVEN 4 MENUS
+    public QuestMenu(String invName, BetonQuestQT plugin) {
         super(invName);
+        this.plugin = plugin;
     }
 
     @Override
@@ -109,11 +117,8 @@ public class QuestMenu extends MultiPageInventoryGUI {
         final int[] currentSlot = {9};
         final int[] currentPage = {1};
         Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
-        PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-        List<String> playerTags = playerData.getTags();
 
-        Map<String, QuestPackage> mappedQuests = BetonQuest.getInstance().getPackages();
-        Map<String, QuestPackage> sortedQuests = mappedQuests.entrySet()
+        Map<String, QuestPackage> sortedQuests = QuestPlaceholder.packageByName.entrySet()
                 .stream()
                 .parallel()
                 .sorted(Map.Entry.comparingByKey())
@@ -126,24 +131,44 @@ public class QuestMenu extends MultiPageInventoryGUI {
 
         sortedQuests.forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            if(!playerTags.contains(questPackage + ".questTrackable")){return;}// TODO CHANGE IT FROM TAG TO ENUM HIDDEN
+            if(QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.HIDDEN) == Statuses.HIDDEN){return;}
 
+            ItemStack display;
+            String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+            ConfigurationSection config = questPackage.getConfig();
 
-            questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getKeys(false);
-            questPackage.getConfig().getConfigurationSection("questParameters.questName").getKeys(false);
+            String material = getSafeString(config, "questParameters.display", lang);
+            Material mat = Material.matchMaterial(material != null ? material.toUpperCase() : "");
+            display = (mat != null) ? new ItemStack(mat) : new ItemStack(Material.DIRT);
+
+            String questName = getSafeString(config, "questParameters.nane", lang);
+            if (questName == null) {
+                questName = "ERROR CHECK SYNTAX OR REPORT";
+            }
+
+            String lore = getSafeString(config, "questParameters.desc", lang);
+            if (lore == null) {
+                lore = "ERROR CHECK SYNTAX OR REPORT";
+            }
+
+            String questCategory = getSafeString(config, "questParameters.category", lang);
+            if (questCategory == null) {
+                questCategory = "locked";
+            }
+
             QuestPlaceholder questPlaceholder = new QuestPlaceholder(
-                    new ItemStack(Material.DIRT),
-                    questPackage.getConfig().getConfigurationSection("questParameters.questName").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get()),
-                    questPackage.getConfig().getConfigurationSection("questParameters.questDesc").getString(BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get()),
+                    display,
+                    questName,
+                    lore,
+                    questCategory,
                     player,
                     questPackage
             );
 
             //TODO DYNAMICZNY OPIS W ZALEŻNOŚCI OD WARUNKU CZYLI KASKADOWE SPRAWDZANIE JAK W BETONQUEŚCIE
 
-
             this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
-                    .creator(_ -> questPlaceholder.getQuestDisplay())
+                    .creator(x -> questPlaceholder.getQuestDisplay())
                     .consumer(e -> {
                         e.setCancelled(true);
                     })
@@ -154,5 +179,10 @@ public class QuestMenu extends MultiPageInventoryGUI {
                 currentPage[0]++;
             }
         });
+    }
+
+    String getSafeString(ConfigurationSection base, String path, String langKey) {
+        ConfigurationSection section = base.getConfigurationSection(path);
+        return (section != null) ? section.getString(langKey) : null;
     }
 }

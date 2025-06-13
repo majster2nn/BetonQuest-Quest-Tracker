@@ -2,6 +2,7 @@ package majster2nn.dev.betonQuestQT;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.Commands;
+import majster2nn.dev.betonQuestQT.Tracker.Menus.MainQuestMenu;
 import majster2nn.dev.betonQuestQT.Tracker.QuestMenu;
 import org.bukkit.entity.Player;
 
@@ -22,7 +23,7 @@ public class CommandList {
                         return 0;
                     }
 
-                    plugin.guiManager.openGui(new QuestMenu(plugin.getTranslation("header", player)), player);
+                    plugin.guiManager.openGui(new QuestMenu(plugin.getTranslation("header", player), plugin), player);
                     return 1;
                 })
                 .build()
@@ -31,7 +32,7 @@ public class CommandList {
         commands.add(Commands.literal("bqqt")
                 .requires(sender -> sender.getSender().hasPermission("bqqt.admin"))
                 .then(Commands.literal("reload")
-                        .executes(_ -> {
+                        .executes(x -> {
                             plugin = BetonQuestQT.getInstance();
                             try{
                                 plugin.reload();
@@ -40,6 +41,13 @@ public class CommandList {
                                 plugin.getLogger().severe(e.getMessage());
                                 return 0;
                             }
+                        }))
+                .then(Commands.literal("test")
+                        .executes(ctx -> {
+                            plugin = BetonQuestQT.getInstance();
+                            if(!(ctx.getSource().getSender() instanceof Player player)) return 0;
+                            plugin.guiManager.openGui(new MainQuestMenu(plugin.getTranslation("main-menu", player)), player);
+                            return 1;
                         }))
                 .build()
         );

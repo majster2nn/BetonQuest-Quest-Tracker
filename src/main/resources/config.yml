@@ -1,7 +1,26 @@
 menuTranslations:
-  header:
-    en-US: "Quests"
-    pl-PL: "Zadania"
+  main-menu:
+    en-US: "Menu"
+    pl-PL: "Menu"
+
+  header-main:
+    en-US: "Main Quests"
+    pl-PL: "Zadania Główne"
+    fr-FR: "Quêtes"
+
+  header-side:
+    en-US: "Side Quests"
+    pl-PL: "Zadania Poboczne"
+    fr-FR: "Quêtes"
+
+  header-other:
+    en-US: "Other Quests"
+    pl-PL: "Zadania Inne"
+    fr-FR: "Quêtes"
+
+  header-finished:
+    en-US: "Finished Quests"
+    pl-PL: "Zadania Ukończone"
     fr-FR: "Quêtes"
 
   nextP:
@@ -28,3 +47,11 @@ menuTranslations:
     en-US: "Locked"
     pl-PL: "Zablokowane"
     fr-FR: "Bloqué"
+
+
+filters:
+  - "seasonal"
+  - "event"
+  - "exploration"
+  - "resource collection"
+  - "daily"

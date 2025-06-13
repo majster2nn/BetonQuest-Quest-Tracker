@@ -1,6 +1,7 @@
 package majster2nn.dev.betonQuestQT.Tracker.Placeholders;
 
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -28,8 +29,8 @@ public class QuestStatus extends PlaceholderExpansion {
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (player.isOnline() && player instanceof Player) {
             return QuestPlaceholder.packageStatusesMap.getOrDefault(player.getPlayer(), new HashMap<>() {{
-                put(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED);
-            }}).getOrDefault(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED).toString();
+                put(QuestPlaceholder.packageByName.get(params), Statuses.LOCKED);
+            }}).getOrDefault(QuestPlaceholder.packageByName.get(params), Statuses.LOCKED).toString();
         }
         return "0";
     }
@@ -37,7 +38,7 @@ public class QuestStatus extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
         return QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>() {{
-            put(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED);
-        }}).getOrDefault(QuestPlaceholder.packageByNameMap.get(params), QuestPlaceholder.Statuses.LOCKED).toString();
+            put(QuestPlaceholder.packageByName.get(params), Statuses.LOCKED);
+        }}).getOrDefault(QuestPlaceholder.packageByName.get(params), Statuses.LOCKED).toString();
     }
 }
