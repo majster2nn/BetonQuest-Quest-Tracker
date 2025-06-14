@@ -55,16 +55,13 @@ public final class BetonQuestQT extends JavaPlugin {
             new QuestStatus().register(); //
         }
 
-        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
-            if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-            QuestPlaceholder.packageByName.put(id, questPackage);
-        });
+        updateConfig();
+        resetQuestPackages();
 
         Bukkit.getPluginManager().registerEvents(new GUIListener(guiManager), this);
         Bukkit.getPluginManager().registerEvents(new Events(), this);
 
         setup();
-        updateConfig();
     }
 
     @Override
@@ -91,12 +88,37 @@ public final class BetonQuestQT extends JavaPlugin {
     }
 
     public void reload(){
+        updateConfig();
+        resetQuestPackages();
+    }
+
+    public void resetQuestPackages(){
         QuestPlaceholder.packageByName.clear();
+        QuestPlaceholder.packagesByCategory.clear();
+        QuestPlaceholder.tags.clear();
+
+        QuestPlaceholder.tags.addAll(getConfig().getStringList("filters"));
 
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageByName.put(id, questPackage);
+
+            String questCategory = Utils.getSafeString(questPackage.getConfig(), "questParameters", "category");
+            if (questCategory == null) {
+                questCategory = "other";
+            }
+
+            switch(questCategory){
+                case "main" -> QuestPlaceholder.packagesByCategory.put(questPackage, "main");
+                case "side" -> QuestPlaceholder.packagesByCategory.put(questPackage, "side");
+                case "other" -> QuestPlaceholder.packagesByCategory.put(questPackage, "other");
+            }
+
+            String questTags = Utils.getSafeString(questPackage.getConfig(), "questParameters", "tags");
+            List<String> tags = questTags != null ? List.of(questTags.split(",")): new ArrayList<>();
+            QuestPlaceholder.packagesTags.put(questPackage, tags);
         });
+
     }
 
     public void registerEvents(BetonQuest betonQuest){

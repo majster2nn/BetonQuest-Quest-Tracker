@@ -53,5 +53,5 @@ filters:
   - "seasonal"
   - "event"
   - "exploration"
-  - "resource collection"
+  - "resource_collection"
   - "daily"

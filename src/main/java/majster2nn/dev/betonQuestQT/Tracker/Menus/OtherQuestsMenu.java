@@ -7,6 +7,7 @@ import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
+import majster2nn.dev.betonQuestQT.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
@@ -20,6 +21,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScrollButton;
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
@@ -46,7 +49,8 @@ public class OtherQuestsMenu extends MultiPageInventoryGUI {
 
         this.addButton(46, -1, scrollButtons(46));
         this.addButton(52, -1, scrollButtons(52));
-        this.addButton(53, -1, backButton());
+        this.addButton(48, -1, backButton());
+        this.addButton(50, -1, filterButtons());
 
         super.decorate(player);
     }
@@ -132,38 +136,36 @@ public class OtherQuestsMenu extends MultiPageInventoryGUI {
                     String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
                     ConfigurationSection config = questPackage.getConfig();
 
-                    String material = getSafeString(config, "questParameters.display", lang);
+                    String material = Utils.getSafeString(config, "questParameters.display", lang);
                     Material mat = Material.matchMaterial(material != null ? material.toUpperCase() : "");
                     display = (mat != null) ? new ItemStack(mat) : new ItemStack(Material.DIRT);
 
-                    String questName = getSafeString(config, "questParameters.name", lang);
+                    String questName = Utils.getSafeString(config, "questParameters.name", lang);
                     if (questName == null) {
                         questName = "ERROR CHECK SYNTAX OR REPORT";
                     }
 
-                    String lore = getSafeString(config, "questParameters.desc", lang);
+                    String lore = Utils.getSafeString(config, "questParameters.desc", lang);
                     if (lore == null) {
                         lore = "ERROR CHECK SYNTAX OR REPORT";
-                    }
-
-                    String questCategory = getSafeString(config, "questParameters", "category");
-                    if (questCategory == null) {
-                        questCategory = "other";
                     }
 
                     QuestPlaceholder questPlaceholder = new QuestPlaceholder(
                             display,
                             questName,
                             lore,
-                            questCategory,
                             player,
                             questPackage
                     );
 
-                    if(!QuestPlaceholder.packagesByCategory.getOrDefault(questPackage, "none").equalsIgnoreCase("other") ||
-                        QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN).equals(Statuses.HIDDEN)){
+                    if (!"other".equalsIgnoreCase(QuestPlaceholder.packagesByCategory.getOrDefault(questPackage, "none")) ||
+                            Statuses.HIDDEN.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN)) ||
+                            Statuses.FINISHED.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN)) ||
+                            !new HashSet<>(QuestPlaceholder.packagesTags.getOrDefault(questPackage, List.of()))
+                                    .containsAll(FilterMenu.playerFilters.getOrDefault(player, List.of()))) {
                         return;
                     }
+
 
                     this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
                             .creator(x -> questPlaceholder.getQuestDisplay())
@@ -177,8 +179,17 @@ public class OtherQuestsMenu extends MultiPageInventoryGUI {
                 });
     }
 
-    String getSafeString(ConfigurationSection base, String path, String langKey) {
-        ConfigurationSection section = base.getConfigurationSection(path);
-        return (section != null) ? section.getString(langKey) : null;
+    private InventoryButton filterButtons(){
+        return new InventoryButton()
+                .creator( p -> {
+                    ItemStack display = new ItemStack(Material.PAPER);
+                    display.setData(DataComponentTypes.CUSTOM_NAME, Component.text("Filters")
+                            .decoration(TextDecoration.ITALIC, false));
+                    return display;
+                })
+                .consumer(e -> {
+                    BetonQuestQT.getInstance().guiManager.openGui(new FilterMenu("Filters", "other"), (Player) e.getWhoClicked());
+                    e.setCancelled(true);
+                });
     }
 }

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScrollButton;
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
 
+@Deprecated(forRemoval = true)
 public class QuestMenu extends MultiPageInventoryGUI {
     private final BetonQuestQT plugin;
 
@@ -151,16 +152,10 @@ public class QuestMenu extends MultiPageInventoryGUI {
                 lore = "ERROR CHECK SYNTAX OR REPORT";
             }
 
-            String questCategory = getSafeString(config, "questParameters.category", lang);
-            if (questCategory == null) {
-                questCategory = "locked";
-            }
-
             QuestPlaceholder questPlaceholder = new QuestPlaceholder(
                     display,
                     questName,
                     lore,
-                    questCategory,
                     player,
                     questPackage
             );

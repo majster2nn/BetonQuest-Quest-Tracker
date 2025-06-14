@@ -30,6 +30,8 @@ public class MainQuestMenu extends InventoryGUI {
         addButton(23, otherQuestsButton());
         addButton(25, finishedQuestsButton());
 
+        FilterMenu.resetFilters(player);
+
         super.decorate(player);
     }
 

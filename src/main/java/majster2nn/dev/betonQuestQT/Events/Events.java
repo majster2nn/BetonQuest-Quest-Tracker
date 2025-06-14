@@ -41,12 +41,16 @@ public class Events implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
         Player player = e.getPlayer();
-        Map<String, List<String>> statusesMap = new HashMap<>();
+        Map<String, List<String>> statusesMap = new HashMap<>(){{
+            put("activeQuests", new ArrayList<>());
+            put("lockedQuests", new ArrayList<>());
+            put("finishedQuests", new ArrayList<>());
+        }};
 
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
 
-            Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.LOCKED);
+            Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.HIDDEN);
             switch (status) {
                 case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
                 case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);

@@ -23,13 +23,13 @@ public class QuestPlaceholder {
     public String name;
     public String lore;
     public Statuses status = Statuses.LOCKED;
-    public String category;
     public Player player;
     private final QuestPackage questPackage;
 
     public static Map<Player, @NotNull HashMap<@NotNull QuestPackage, @NotNull Statuses>> packageStatusesMap = new HashMap<>();
     public static Map<String, QuestPackage> packageByName = new HashMap<>();
     public static Map<QuestPackage, String> packagesByCategory = new HashMap<>();
+    public static Map<QuestPackage, List<String>> packagesTags = new HashMap<>();
     public static List<String> tags = new ArrayList<>();
 
     public ItemStack questDisplay;
@@ -38,13 +38,11 @@ public class QuestPlaceholder {
             @NotNull ItemStack display,
             @NotNull String name,
             @NotNull String lore,
-            String category,
             @NotNull Player player,
             @NotNull QuestPackage questPackage) {
         this.displayMaterial = display;
         this.name = name;
         this.lore = lore;
-        this.category = category;
         this.player = player;
         this.questPackage = questPackage;
         try {
@@ -110,16 +108,6 @@ public class QuestPlaceholder {
 
         questDisplay = displayMaterial;
         questDisplay.setItemMeta(questDisplayMeta);
-
-        if(status == Statuses.FINISHED){
-            packagesByCategory.put(questPackage, "finished");
-        }else{
-            switch(category){
-                case "main" -> packagesByCategory.put(questPackage, "main");
-                case "side" -> packagesByCategory.put(questPackage, "side");
-                case "other" -> packagesByCategory.put(questPackage, "other");
-            }
-        }
     }
 
     public ItemStack getQuestDisplay(){

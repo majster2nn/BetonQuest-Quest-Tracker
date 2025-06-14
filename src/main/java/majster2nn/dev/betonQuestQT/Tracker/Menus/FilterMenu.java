@@ -7,38 +7,44 @@ import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
-import majster2nn.dev.betonQuestQT.Utils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScrollButton;
 import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
 
-public class FinishedQuestsMenu extends MultiPageInventoryGUI {
-    public FinishedQuestsMenu(String invName) {
+public class FilterMenu extends MultiPageInventoryGUI {
+    private final String whichMenu;
+    public static HashMap<Player, List<String>> playerFilters = new HashMap<>();
+
+    public FilterMenu(String invName, String whichMenu) {
         super(invName);
+        this.whichMenu = whichMenu;
     }
 
     @Override
     protected Inventory createInventory(String invName) {
         return Bukkit.createInventory(null, 9*6, Component.text(invName));
     }
+
     @Override
     public void decorate(Player player){
-        setQuestButtons(player);
+        setFilterButtons(player);
         for(int i = 0; i <= 8; i++) {
             this.addButton(i, -1, filler());
         }
@@ -50,7 +56,7 @@ public class FinishedQuestsMenu extends MultiPageInventoryGUI {
         this.addButton(46, -1, scrollButtons(46));
         this.addButton(52, -1, scrollButtons(52));
         this.addButton(48, -1, backButton());
-        this.addButton(50, -1, filterButtons());
+        this.addButton(50, -1, resetFilters());
 
         super.decorate(player);
     }
@@ -118,78 +124,69 @@ public class FinishedQuestsMenu extends MultiPageInventoryGUI {
                 })
                 .consumer(e -> {
                     Player player = (Player) e.getWhoClicked();
-                    BetonQuestQT.getInstance().guiManager.openGui(new MainQuestMenu(BetonQuestQT.getInstance().getTranslation("main-menu", player)), player);
+                    switch(whichMenu){
+                        case "finished" -> BetonQuestQT.getInstance().guiManager.openGui(new FinishedQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-finished", player)), player);
+                        case "side" -> BetonQuestQT.getInstance().guiManager.openGui(new SideQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-side", player)), player);
+                        case "main" -> BetonQuestQT.getInstance().guiManager.openGui(new MainQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-main", player)), player);
+                        case "other" -> BetonQuestQT.getInstance().guiManager.openGui(new OtherQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-other", player)), player);
+                    }
+
                 });
     }
-    //TODO DYNAMIC DESCRIPTION BASED OFF CONDITION CHECKING LIKE IN BETONQUEST
-    public void setQuestButtons(Player player){
+
+    private void setFilterButtons(Player player){
         final int[] currentSlot = {9};
         final int[] currentPage = {1};
-        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
-        QuestPlaceholder.packageByName
-                //TODO ADD SORTING AND FILTERING (.sorted, .filter)
-                .forEach((id, questPackage) -> {
-                    if (!questPackage.getTemplates().contains("trackedQuest")) {
-                        return;
-                    }
 
-                    ItemStack display;
-                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
-                    ConfigurationSection config = questPackage.getConfig();
-
-                    String material = Utils.getSafeString(config, "questParameters.display", lang);
-                    Material mat = Material.matchMaterial(material != null ? material.toUpperCase() : "");
-                    display = (mat != null) ? new ItemStack(mat) : new ItemStack(Material.DIRT);
-
-                    String questName = Utils.getSafeString(config, "questParameters.name", lang);
-                    if (questName == null) {
-                        questName = "ERROR CHECK SYNTAX OR REPORT";
-                    }
-
-                    String lore = Utils.getSafeString(config, "questParameters.desc", lang);
-                    if (lore == null) {
-                        lore = "ERROR CHECK SYNTAX OR REPORT";
-                    }
+        for(String tag : QuestPlaceholder.tags){
 
 
-                    QuestPlaceholder questPlaceholder = new QuestPlaceholder(
-                            display,
-                            questName,
-                            lore,
-                            player,
-                            questPackage
-                    );
-
-                    if (Statuses.HIDDEN.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN)) ||
-                        !Statuses.FINISHED.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN)) ||
-                            !new HashSet<>(QuestPlaceholder.packagesTags.getOrDefault(questPackage, List.of()))
-                                    .containsAll(FilterMenu.playerFilters.getOrDefault(player, List.of()))) {
-                        return;
-                    }
-
-                    this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
-                            .creator(x -> questPlaceholder.getQuestDisplay())
-                            .consumer(e -> e.setCancelled(true))
-                    );
-                    currentSlot[0]++;
-                    if(currentSlot[0] == 45){
-                        currentSlot[0] = 9;
-                        currentPage[0]++;
-                    }
-                });
+            this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
+                    .creator(x -> {
+                        ItemStack display;
+                        if(playerFilters.getOrDefault(player, new ArrayList<>()).contains(tag)){
+                            display = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+                            display.setData(DataComponentTypes.CUSTOM_NAME,Component.text(tag).append(Component.text(" Active", NamedTextColor.GREEN))
+                                    .decoration(TextDecoration.ITALIC, false));
+                        }else{
+                            display = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+                            display.setData(DataComponentTypes.CUSTOM_NAME,Component.text(tag).append(Component.text(" Disabled", NamedTextColor.RED))
+                                    .decoration(TextDecoration.ITALIC, false));
+                        }
+                        return display;
+                    })
+                    .consumer(e -> {
+                        if(!playerFilters.getOrDefault(player, new ArrayList<>()).contains(tag)) {
+                            playerFilters.computeIfAbsent(player, p -> new ArrayList<>()).add(tag);
+                        }else{
+                            if(playerFilters.getOrDefault(player, new ArrayList<>()).contains(tag)) playerFilters.get(player).remove(tag);
+                        }
+                        decorate(player);
+                        e.setCancelled(true);
+                    })
+            );
+            currentSlot[0]++;
+            if(currentSlot[0] == 45){
+                currentSlot[0] = 9;
+                currentPage[0]++;
+            }
+        }
     }
-
-    private InventoryButton filterButtons(){
+    private InventoryButton resetFilters(){
         return new InventoryButton()
-                .creator( p -> {
-                    ItemStack display = new ItemStack(Material.PAPER);
-                    display.setData(DataComponentTypes.CUSTOM_NAME, Component.text("Filters")
-                            .decoration(TextDecoration.ITALIC, false));
+                .creator(player -> {
+                    ItemStack display = new ItemStack(Material.BARRIER);
+                    display.setData(DataComponentTypes.CUSTOM_NAME, Component.text("Reset", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
                     return display;
                 })
                 .consumer(e -> {
-                    BetonQuestQT.getInstance().guiManager.openGui(new FilterMenu("Filters", "finished"), (Player) e.getWhoClicked());
+                    resetFilters((Player) e.getWhoClicked());
+                    decorate((Player) e.getWhoClicked());
                     e.setCancelled(true);
                 });
+    }
+
+    public static void resetFilters(Player player){
+        playerFilters.remove(player);
     }
 }
