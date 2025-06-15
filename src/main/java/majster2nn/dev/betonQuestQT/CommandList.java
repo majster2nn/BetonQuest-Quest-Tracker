@@ -22,7 +22,7 @@ public class CommandList {
                         return 0;
                     }
 
-                    plugin.guiManager.openGui(new MainQuestMenu(plugin.getTranslation("main-menu", player)), player);
+                    plugin.guiManager.openGui(new MainQuestMenu(plugin.getMenuTranslation("main-menu", player)), player);
                     return 1;
                 })
                 .build()

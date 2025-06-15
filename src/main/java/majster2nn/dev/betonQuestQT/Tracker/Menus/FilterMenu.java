@@ -106,10 +106,10 @@ public class FilterMenu extends MultiPageInventoryGUI {
                 .consumer(e -> {
                     Player player = (Player) e.getWhoClicked();
                     switch(whichMenu){
-                        case "finished" -> BetonQuestQT.getInstance().guiManager.openGui(new FinishedQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-finished", player)), player);
-                        case "side" -> BetonQuestQT.getInstance().guiManager.openGui(new SideQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-side", player)), player);
-                        case "main" -> BetonQuestQT.getInstance().guiManager.openGui(new MainQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-main", player)), player);
-                        case "other" -> BetonQuestQT.getInstance().guiManager.openGui(new OtherQuestsMenu(BetonQuestQT.getInstance().getTranslation("header-other", player)), player);
+                        case "finished" -> BetonQuestQT.getInstance().guiManager.openGui(new FinishedQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-finished", player)), player);
+                        case "side" -> BetonQuestQT.getInstance().guiManager.openGui(new SideQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-side", player)), player);
+                        case "main" -> BetonQuestQT.getInstance().guiManager.openGui(new MainQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-main", player)), player);
+                        case "other" -> BetonQuestQT.getInstance().guiManager.openGui(new OtherQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-other", player)), player);
                     }
 
                 });

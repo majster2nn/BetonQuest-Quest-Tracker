@@ -102,7 +102,7 @@ public class OtherQuestsMenu extends MultiPageInventoryGUI {
                 })
                 .consumer(e -> {
                     Player player = (Player) e.getWhoClicked();
-                    BetonQuestQT.getInstance().guiManager.openGui(new MainQuestMenu(BetonQuestQT.getInstance().getTranslation("main-menu", player)), player);
+                    BetonQuestQT.getInstance().guiManager.openGui(new MainQuestMenu(BetonQuestQT.getInstance().getMenuTranslation("main-menu", player)), player);
                 });
     }
     public void setQuestButtons(Player player){

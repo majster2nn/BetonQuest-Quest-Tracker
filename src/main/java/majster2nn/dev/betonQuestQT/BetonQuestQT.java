@@ -14,6 +14,7 @@ import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.profile.Profile;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -170,11 +171,12 @@ public final class BetonQuestQT extends JavaPlugin {
         return this.configData;
     }
 
-    public String getTranslation(String part, Player player) {
+    public String getMenuTranslation(String part, Player player) {
         String lang = "en-US";
 
         try {
-            lang = BetonQuest.getInstance().getConfig().getString("language", "en-US");
+            Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+            lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
         } catch (Exception ignored) {}
 
         String path = "menuTranslations." + part + "." + lang;

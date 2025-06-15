@@ -46,7 +46,7 @@ public class MainQuestMenu extends InventoryGUI {
                 .consumer(e -> {
                     if(e.getSlot() == 19){
                         Player player = (Player) e.getWhoClicked();
-                        plugin.guiManager.openGui(new MainQuestsMenu(plugin.getTranslation("header-main", player)), player);
+                        plugin.guiManager.openGui(new MainQuestsMenu(plugin.getMenuTranslation("header-main", player)), player);
                     }
                    e.setCancelled(true);
                 });
@@ -62,7 +62,7 @@ public class MainQuestMenu extends InventoryGUI {
                 .consumer(e -> {
                     if(e.getSlot() == 21){
                         Player player = (Player) e.getWhoClicked();
-                        plugin.guiManager.openGui(new SideQuestsMenu(plugin.getTranslation("header-side", player)), player);
+                        plugin.guiManager.openGui(new SideQuestsMenu(plugin.getMenuTranslation("header-side", player)), player);
                     }
                     e.setCancelled(true);
                 });
@@ -78,7 +78,7 @@ public class MainQuestMenu extends InventoryGUI {
                 .consumer(e -> {
                     if(e.getSlot() == 23){
                         Player player = (Player) e.getWhoClicked();
-                        plugin.guiManager.openGui(new OtherQuestsMenu(plugin.getTranslation("header-other", player)), player);
+                        plugin.guiManager.openGui(new OtherQuestsMenu(plugin.getMenuTranslation("header-other", player)), player);
                     }
                     e.setCancelled(true);
                 });
@@ -94,7 +94,7 @@ public class MainQuestMenu extends InventoryGUI {
                 .consumer(e -> {
                     if(e.getSlot() == 25){
                         Player player = (Player) e.getWhoClicked();
-                        plugin.guiManager.openGui(new FinishedQuestsMenu(plugin.getTranslation("header-finished", player)), player);
+                        plugin.guiManager.openGui(new FinishedQuestsMenu(plugin.getMenuTranslation("header-finished", player)), player);
                     }
                     e.setCancelled(true);
                 });

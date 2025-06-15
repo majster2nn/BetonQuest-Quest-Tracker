@@ -105,7 +105,7 @@ public class QuestPlaceholder {
         switch(status){
             case ACTIVE:{
                 loreComponents.add(Component
-                        .text(BetonQuestQT.getInstance().getTranslation("quest_active", player))
+                        .text(BetonQuestQT.getInstance().getMenuTranslation("quest_active", player))
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
                         .color(NamedTextColor.GREEN));
                 break;
@@ -113,7 +113,7 @@ public class QuestPlaceholder {
             case FINISHED:{
                 loreComponents.clear();
                 loreComponents.add(Component
-                        .text(BetonQuestQT.getInstance().getTranslation("quest_finished", player))
+                        .text(BetonQuestQT.getInstance().getMenuTranslation("quest_finished", player))
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
                         .color(NamedTextColor.GRAY));
                 break;
@@ -121,7 +121,7 @@ public class QuestPlaceholder {
             case LOCKED:{
                 loreComponents.clear();
                 loreComponents.add(Component
-                        .text(BetonQuestQT.getInstance().getTranslation("quest_locked", player))
+                        .text(BetonQuestQT.getInstance().getMenuTranslation("quest_locked", player))
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
                         .color(NamedTextColor.RED));
                 break;
