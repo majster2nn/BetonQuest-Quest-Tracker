@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,7 @@ public class Events implements Listener {
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
-                    .put(questPackage, statusesMap.getOrDefault(id, Statuses.HIDDEN));
+                    .put(questPackage.getQuestPath(), statusesMap.getOrDefault(id, Statuses.HIDDEN));
         });
     }
 
@@ -50,7 +49,7 @@ public class Events implements Listener {
         BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
 
-            Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.HIDDEN);
+            Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
             switch (status) {
                 case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
                 case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);
@@ -62,5 +61,7 @@ public class Events implements Listener {
             DataBaseManager.addColumnValueToUserTable(key, "", player);
             DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
         }
+
+        DataBaseManager.addColumnValueToUserTable("username", player.getName(), player);
     }
 }

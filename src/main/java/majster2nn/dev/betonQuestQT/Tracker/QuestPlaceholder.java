@@ -1,6 +1,7 @@
 package majster2nn.dev.betonQuestQT.Tracker;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -9,6 +10,7 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
+import org.betonquest.betonquest.id.ConditionID;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -21,12 +23,12 @@ import java.util.*;
 public class QuestPlaceholder {
     public ItemStack displayMaterial;
     public String name;
-    public String lore;
+    public Map<String, String> conditionedLore;
     public Statuses status = Statuses.LOCKED;
     public Player player;
     private final QuestPackage questPackage;
 
-    public static Map<Player, @NotNull HashMap<@NotNull QuestPackage, @NotNull Statuses>> packageStatusesMap = new HashMap<>();
+    public static Map<Player, Map<String, Statuses>> packageStatusesMap = new HashMap<>();
     public static Map<String, QuestPackage> packageByName = new HashMap<>();
     public static Map<QuestPackage, String> packagesByCategory = new HashMap<>();
     public static Map<QuestPackage, List<String>> packagesTags = new HashMap<>();
@@ -37,12 +39,12 @@ public class QuestPlaceholder {
     public QuestPlaceholder(
             @NotNull ItemStack display,
             @NotNull String name,
-            @NotNull String lore,
+            @NotNull Map<String, String> conditionedLore,
             @NotNull Player player,
             @NotNull QuestPackage questPackage) {
         this.displayMaterial = display;
         this.name = name;
-        this.lore = lore;
+        this.conditionedLore = conditionedLore;
         this.player = player;
         this.questPackage = questPackage;
         try {
@@ -64,6 +66,30 @@ public class QuestPlaceholder {
                 .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 
         List<Component> loreComponents = new ArrayList<>();
+        String lore = "";
+
+        for(Map.Entry<String, String> descPart : conditionedLore.entrySet()){
+            Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+            List<ConditionID> conditions = new ArrayList<>();
+            for(String condition : Optional.ofNullable(descPart.getValue()).orElse("").split(",")){
+                if(!condition.isBlank()){
+                    try {
+                        conditions.add(new ConditionID(questPackage, condition));
+                    } catch (QuestException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            if(BetonQuest.getInstance().getQuestTypeAPI().conditions(profile, conditions)){
+                lore = descPart.getKey();
+                break;
+            }
+        }
+
+        if(lore == null || lore.isBlank() || lore.isEmpty()){
+            lore = "";
+        }
 
         for(String line : lore.split("\n")){
             loreComponents.add(Component
@@ -73,7 +99,8 @@ public class QuestPlaceholder {
             );
         }
 
-        status = packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage, Statuses.HIDDEN);
+        status = packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
+
 
         switch(status){
             case ACTIVE:{
@@ -169,5 +196,43 @@ public class QuestPlaceholder {
 
         }
         return formattedString.toString();
+    }
+
+    public static QuestPlaceholder getQuestPlaceholderFromPackage(String id, QuestPackage questPackage, Player player){
+        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+
+        ItemStack display;
+        String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+        ConfigurationSection config = questPackage.getConfig();
+
+        String material = Utils.getSafeString(config, "questParameters.display", lang);
+        Material mat = Material.matchMaterial(material != null ? material.toUpperCase() : "");
+        display = (mat != null) ? new ItemStack(mat) : new ItemStack(Material.DIRT);
+
+        String questName = Utils.getSafeString(config, "questParameters.name", lang);
+        if (questName == null) {
+            questName = "ERROR CHECK SYNTAX OR REPORT";
+        }
+
+        Map<String, String> conditionedDesc = new HashMap<>();
+        for(String key : config.getConfigurationSection("questParameters.desc").getKeys(false)){
+            String descPart = config.getString("questParameters.desc." + key + ".text." + lang);
+            String conditions = config.getString("questParameters.desc." + key + ".conditions");
+            //TODO THIS PART LOADS EVERY SINGLE PACKAGE OF QUEST EVEN IF IT DOESNT HAVE ANYTHING TO DO WITH THE CURRENT CATEGORY AND ALSO RELOADS ON EVERY CLICK, MIGHT CAUSE SERIOUS LAGS PROCEED WITH CAUTION
+//            System.out.println("Top level keys in desc: " + config.getConfigurationSection("questParameters.desc").getKeys(false) + " in package of id: " + id);
+//            System.out.println("desc: " + descPart);
+//            System.out.println(config.getConfigurationSection("questParameters.desc").getKeys(true));
+//            System.out.println("conditions: " + conditions + " path checked: questParameters.desc." + key + ".conditions");
+            conditionedDesc.put(descPart, conditions != null ? conditions : "");
+        }
+
+
+        return new QuestPlaceholder(
+                display,
+                questName,
+                conditionedDesc,
+                player,
+                questPackage
+        );
     }
 }

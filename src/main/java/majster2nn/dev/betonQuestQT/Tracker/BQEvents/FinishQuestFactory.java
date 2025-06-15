@@ -21,7 +21,7 @@ public class FinishQuestFactory implements PlayerEventFactory {
         final BetonQuestLogger log = loggerFactory.create(LockQuest.class);
 
         return new OnlineEventAdapter(new FinishQuest(
-                instruction.getPackage()),
+                instruction.getPackage().getQuestPath()),
                 log, instruction.getPackage()
         );
     }

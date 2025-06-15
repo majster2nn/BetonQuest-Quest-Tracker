@@ -21,7 +21,7 @@ public class HideQuestFactory implements PlayerEventFactory {
         final BetonQuestLogger log = loggerFactory.create(LockQuest.class);
 
         return new OnlineEventAdapter(new HideQuest(
-                instruction.getPackage()),
+                instruction.getPackage().getQuestPath()),
                 log, instruction.getPackage()
         );
     }

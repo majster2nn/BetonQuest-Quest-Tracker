@@ -19,9 +19,8 @@ public class ActiveQuestFactory implements PlayerEventFactory {
     @Override
     public PlayerEvent parsePlayer(Instruction instruction) throws QuestException {
         final BetonQuestLogger log = loggerFactory.create(LockQuest.class);
-
         return new OnlineEventAdapter(new ActiveQuest(
-                instruction.getPackage()),
+                instruction.getPackage().getQuestPath()),
                 log, instruction.getPackage()
         );
     }

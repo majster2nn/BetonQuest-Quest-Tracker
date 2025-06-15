@@ -48,6 +48,51 @@ menuTranslations:
     pl-PL: "Zablokowane"
     fr-FR: "Bloqué"
 
+buttonVisuals:
+  backButton:
+    text:
+      en-US: "Go back"
+      pl-PL: "Wróć"
+    displayMaterial: red_stained_glass_pane
+  previousPageButton:
+    text:
+      en-US: "Previous page"
+      pl-PL: "Poprzednia strona"
+    displayMaterial: arrow
+  nextPageButton:
+    text:
+      en-US: "Next page"
+      pl-PL: "Następna strona"
+    displayMaterial: arrow
+  filterButton:
+    text:
+      en-US: "Filters"
+      pl-PL: "Filtry"
+    displayMaterial: paper
+  mainQuestButton:
+    text:
+      en-US: "Filters"
+      pl-PL: "Filtry"
+    displayMaterial: paper
+    slot: 19
+  sideQuestButton:
+    text:
+      en-US: "Filters"
+      pl-PL: "Filtry"
+    displayMaterial: paper
+    slot: 21
+  otherQuestButton:
+    text:
+      en-US: "Filters"
+      pl-PL: "Filtry"
+    displayMaterial: paper
+    slot: 23
+  finishedQuestButton:
+    text:
+      en-US: "Filters"
+      pl-PL: "Filtry"
+    displayMaterial: paper
+    slot: 25
 
 filters:
   - "seasonal"

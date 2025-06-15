@@ -2,21 +2,18 @@ package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
 
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
-import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
-import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
-import org.betonquest.betonquest.api.quest.event.PlayerEvent;
 import org.betonquest.betonquest.api.quest.event.online.OnlineEvent;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 
 public class ActiveQuest implements OnlineEvent {
-    private QuestPackage questPackage;
+    private String id;
 
-    public ActiveQuest(QuestPackage questPackage){
-        this.questPackage = questPackage;
+    public ActiveQuest(String id){
+        this.id = id;
     }
 
 
@@ -24,6 +21,6 @@ public class ActiveQuest implements OnlineEvent {
     public void execute(OnlineProfile onlineProfile) throws QuestException {
         Player player = onlineProfile.getPlayer().getPlayer();
         QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
-                .put(questPackage, Statuses.ACTIVE);
+                .put(id, Statuses.ACTIVE);
     }
 }

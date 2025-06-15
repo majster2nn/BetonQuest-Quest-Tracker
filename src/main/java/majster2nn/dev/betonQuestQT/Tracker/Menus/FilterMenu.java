@@ -2,11 +2,9 @@ package majster2nn.dev.betonQuestQT.Tracker.Menus;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
-import majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsHandlers;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -14,20 +12,15 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getLeftScrollButton;
-import static majster2nn.dev.betonQuestQT.InventoryHandlers.HeadsList.getRightScrollButton;
-
+@SuppressWarnings("UnstableApiUsage")
 public class FilterMenu extends MultiPageInventoryGUI {
     private final String whichMenu;
     public static HashMap<Player, List<String>> playerFilters = new HashMap<>();
@@ -61,37 +54,26 @@ public class FilterMenu extends MultiPageInventoryGUI {
         super.decorate(player);
     }
 
-    public InventoryButton filler(){
+    private InventoryButton filler(){
         return new InventoryButton()
                 .creator(player -> new ItemStack(Material.BLACK_STAINED_GLASS_PANE))
                 .consumer(e-> e.setCancelled(true));
     }
 
-    public InventoryButton scrollButtons(int slot){
+    private InventoryButton scrollButtons(int slot){
         return new InventoryButton()
                 .creator(player -> {
                     ItemStack display;
+                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+
                     switch(slot){
                         case 46:{
-                            display = new ItemStack(HeadsHandlers.getHead(getLeftScrollButton()));
-                            ItemMeta meta = display.getItemMeta();
-                            String label = BetonQuestQT.getInstance().getTranslation("prevP", player);
-                            if (label == null || label.isEmpty()) label = "←";
-                            meta.displayName(Component
-                                    .text(label)
-                                    .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE));
-                            display.setItemMeta(meta);
+                            display = ButtonVisualsStorage.getButtonItem("previousPageButton", lang);
                             break;
                         }
                         case 52:{
-                            display = new ItemStack(HeadsHandlers.getHead(getRightScrollButton()));
-                            ItemMeta meta = display.getItemMeta();
-                            String label = BetonQuestQT.getInstance().getTranslation("nextP", player);
-                            if (label == null || label.isEmpty()) label = "→";
-                            meta.displayName(Component
-                                    .text(label)
-                                    .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE));
-                            display.setItemMeta(meta);
+                            display = ButtonVisualsStorage.getButtonItem("nextPageButton", lang);
                             break;
                         }
                         default:{
@@ -117,10 +99,9 @@ public class FilterMenu extends MultiPageInventoryGUI {
     private InventoryButton backButton(){
         return new InventoryButton()
                 .creator(p -> {
-                    ItemStack display = new ItemStack(Material.ARROW);
-                    display.setData(DataComponentTypes.CUSTOM_NAME, Component.text("Back")
-                            .decoration(TextDecoration.ITALIC, false));
-                    return display;
+                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(p);
+                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    return ButtonVisualsStorage.getButtonItem("backButton", lang);
                 })
                 .consumer(e -> {
                     Player player = (Player) e.getWhoClicked();

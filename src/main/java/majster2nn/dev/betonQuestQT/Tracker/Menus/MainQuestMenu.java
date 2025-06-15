@@ -1,16 +1,16 @@
 package majster2nn.dev.betonQuestQT.Tracker.Menus;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryGUI;
 import net.kyori.adventure.text.Component;
+import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.profile.Profile;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("UnstableApiUsage")
 public class MainQuestMenu extends InventoryGUI {
     private final BetonQuestQT plugin = BetonQuestQT.getInstance();
 
@@ -25,10 +25,11 @@ public class MainQuestMenu extends InventoryGUI {
 
     @Override
     public void decorate(Player player){
-        addButton(19, mainQuestsButton());
-        addButton(21, sideQuestsButton());
-        addButton(23, otherQuestsButton());
-        addButton(25, finishedQuestsButton());
+
+        addButton(ButtonVisualsStorage.getButtonSlot("mainQuestButton"), mainQuestsButton());
+        addButton(ButtonVisualsStorage.getButtonSlot("sideQuestButton"), sideQuestsButton());
+        addButton(ButtonVisualsStorage.getButtonSlot("otherQuestButton"), otherQuestsButton());
+        addButton(ButtonVisualsStorage.getButtonSlot("finishedQuestButton"), finishedQuestsButton());
 
         FilterMenu.resetFilters(player);
 
@@ -38,9 +39,9 @@ public class MainQuestMenu extends InventoryGUI {
     private InventoryButton mainQuestsButton(){
         return new InventoryButton()
                 .creator(player -> {
-                    ItemStack display = new ItemStack(Material.GOLD_INGOT);
-                    display.setData(DataComponentTypes.ITEM_NAME, Component.text("Main Quests"));
-                    return display;
+                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    return ButtonVisualsStorage.getButtonItem("mainQuestButton", lang);
                 })
                 .consumer(e -> {
                     if(e.getSlot() == 19){
@@ -54,9 +55,9 @@ public class MainQuestMenu extends InventoryGUI {
     private InventoryButton sideQuestsButton(){
         return new InventoryButton()
                 .creator(player -> {
-                    ItemStack display = new ItemStack(Material.IRON_INGOT);
-                    display.setData(DataComponentTypes.ITEM_NAME, Component.text("Side Quests"));
-                    return display;
+                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    return ButtonVisualsStorage.getButtonItem("sideQuestButton", lang);
                 })
                 .consumer(e -> {
                     if(e.getSlot() == 21){
@@ -70,9 +71,9 @@ public class MainQuestMenu extends InventoryGUI {
     private InventoryButton otherQuestsButton(){
         return new InventoryButton()
                 .creator(player -> {
-                    ItemStack display = new ItemStack(Material.PAPER);
-                    display.setData(DataComponentTypes.ITEM_NAME, Component.text("Other Quests"));
-                    return display;
+                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    return ButtonVisualsStorage.getButtonItem("otherQuestButton", lang);
                 })
                 .consumer(e -> {
                     if(e.getSlot() == 23){
@@ -86,9 +87,9 @@ public class MainQuestMenu extends InventoryGUI {
     private InventoryButton finishedQuestsButton(){
         return new InventoryButton()
                 .creator(player -> {
-                    ItemStack display = new ItemStack(Material.WRITABLE_BOOK);
-                    display.setData(DataComponentTypes.ITEM_NAME, Component.text("Finished Quests"));
-                    return display;
+                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    return ButtonVisualsStorage.getButtonItem("finishedQuestButton", lang);
                 })
                 .consumer(e -> {
                     if(e.getSlot() == 25){
