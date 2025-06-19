@@ -44,7 +44,7 @@ public class MainQuestMenu extends InventoryGUI {
                     return ButtonVisualsStorage.getButtonItem("mainQuestButton", lang);
                 })
                 .consumer(e -> {
-                    if(e.getSlot() == 19){
+                    if(e.getSlot() == ButtonVisualsStorage.getButtonSlot("mainQuestButton")){
                         Player player = (Player) e.getWhoClicked();
                         plugin.guiManager.openGui(new MainQuestsMenu(plugin.getMenuTranslation("header-main", player)), player);
                     }
@@ -60,7 +60,7 @@ public class MainQuestMenu extends InventoryGUI {
                     return ButtonVisualsStorage.getButtonItem("sideQuestButton", lang);
                 })
                 .consumer(e -> {
-                    if(e.getSlot() == 21){
+                    if(e.getSlot() == ButtonVisualsStorage.getButtonSlot("sideQuestButton")){
                         Player player = (Player) e.getWhoClicked();
                         plugin.guiManager.openGui(new SideQuestsMenu(plugin.getMenuTranslation("header-side", player)), player);
                     }
@@ -76,7 +76,7 @@ public class MainQuestMenu extends InventoryGUI {
                     return ButtonVisualsStorage.getButtonItem("otherQuestButton", lang);
                 })
                 .consumer(e -> {
-                    if(e.getSlot() == 23){
+                    if(e.getSlot() == ButtonVisualsStorage.getButtonSlot("otherQuestButton")){
                         Player player = (Player) e.getWhoClicked();
                         plugin.guiManager.openGui(new OtherQuestsMenu(plugin.getMenuTranslation("header-other", player)), player);
                     }
@@ -92,7 +92,7 @@ public class MainQuestMenu extends InventoryGUI {
                     return ButtonVisualsStorage.getButtonItem("finishedQuestButton", lang);
                 })
                 .consumer(e -> {
-                    if(e.getSlot() == 25){
+                    if(e.getSlot() == ButtonVisualsStorage.getButtonSlot("finishedQuestButton")){
                         Player player = (Player) e.getWhoClicked();
                         plugin.guiManager.openGui(new FinishedQuestsMenu(plugin.getMenuTranslation("header-finished", player)), player);
                     }

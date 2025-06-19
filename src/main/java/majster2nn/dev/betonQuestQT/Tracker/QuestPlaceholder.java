@@ -4,7 +4,6 @@ import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
@@ -61,26 +60,28 @@ public class QuestPlaceholder {
 
         String formattedName = formatLineWithVariables(name);
 
-        questDisplayMeta.displayName(Component
-                .text(formattedName)
-                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE));
+        questDisplayMeta.displayName(Utils.formatYmlString(formattedName));
 
         List<Component> loreComponents = new ArrayList<>();
         String lore = "";
 
+        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
         for(Map.Entry<String, String> descPart : conditionedLore.entrySet()){
-            Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
             List<ConditionID> conditions = new ArrayList<>();
             for(String condition : Optional.ofNullable(descPart.getValue()).orElse("").split(",")){
                 if(!condition.isBlank()){
                     try {
+                        System.out.println(condition);
                         conditions.add(new ConditionID(questPackage, condition));
                     } catch (QuestException e) {
                         throw new RuntimeException(e);
                     }
                 }
             }
-
+//            for(ConditionID condition : conditions){
+//                System.out.println("Condition " + condition.toString());
+//                System.out.println("Status " + BetonQuest.getInstance().getQuestTypeAPI().condition(profile, condition));
+//            }
             if(BetonQuest.getInstance().getQuestTypeAPI().conditions(profile, conditions)){
                 lore = descPart.getKey();
                 break;
@@ -92,11 +93,7 @@ public class QuestPlaceholder {
         }
 
         for(String line : lore.split("\n")){
-            loreComponents.add(Component
-                    .text(formatLineWithVariables(line))
-                    .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                    .color(TextColor.color(Integer.parseInt("757575" , 16)))
-            );
+            loreComponents.add(Utils.formatYmlString(formatLineWithVariables(line)));
         }
 
         status = packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
@@ -205,7 +202,7 @@ public class QuestPlaceholder {
         String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
         ConfigurationSection config = questPackage.getConfig();
 
-        String material = Utils.getSafeString(config, "questParameters.display", lang);
+        String material = Utils.getSafeString(config, "questParameters", "display");
         Material mat = Material.matchMaterial(material != null ? material.toUpperCase() : "");
         display = (mat != null) ? new ItemStack(mat) : new ItemStack(Material.DIRT);
 

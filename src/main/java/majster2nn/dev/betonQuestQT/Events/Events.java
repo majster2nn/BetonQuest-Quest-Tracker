@@ -58,7 +58,6 @@ public class Events implements Listener {
         });
 
         for(String key : statusesMap.keySet()){
-            DataBaseManager.addColumnValueToUserTable(key, "", player);
             DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
         }
 
