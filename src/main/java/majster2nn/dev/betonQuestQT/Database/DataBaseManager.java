@@ -6,7 +6,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class DataBaseManager {
     private static final BetonQuestQT plugin = BetonQuestQT.getInstance();
@@ -34,7 +36,8 @@ public class DataBaseManager {
                 "username STRING," +
                 "activeQuests STRING," +
                 "lockedQuests STRING," +
-                "finishedQuests STRING)";
+                "finishedQuests STRING," +
+                "currentlyActiveQuest STRING)";
 
         String sql1 ="CREATE TABLE IF NOT EXISTS questData (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -53,7 +56,8 @@ public class DataBaseManager {
                 Map.entry("username", "STRING"),
                 Map.entry("activeQuests", "STRING"),
                 Map.entry("lockedQuests", "STRING"),
-                Map.entry("finishedQuests", "STRING")
+                Map.entry("finishedQuests", "STRING"),
+                Map.entry("currentlyActiveQuest", "STRING")
         ));
 
         updateTableColumns(databaseConnection, "questData", Map.ofEntries(

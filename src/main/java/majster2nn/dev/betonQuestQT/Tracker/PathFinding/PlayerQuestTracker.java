@@ -1,9 +1,9 @@
 package majster2nn.dev.betonQuestQT.Tracker.PathFinding;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
@@ -13,28 +13,36 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class PlayerQuestTracker {
-    private static Map<Player, QuestPackage> playerActiveQuest = new HashMap<>();
+    private static Map<Player, QuestPlaceholder> playerActiveQuest = new HashMap<>();
     private static Map<Player, BukkitRunnable> runningTasks = new HashMap<>();
     private static final long cooldown = 20;
 
-    public static Map<Player, QuestPackage> getPlayerActiveQuest() {
-        return playerActiveQuest;
+    public static QuestPlaceholder getPlayerActiveQuest(Player player) {
+        return playerActiveQuest.get(player);
     }
 
-    public static void setPlayerActiveQuest(Player player, QuestPackage activeQuest) {
-        playerActiveQuest.put(player, activeQuest);
+    public static void setPlayerActiveQuest(Player player, QuestPlaceholder activeQuest) {
+        if(activeQuest == null){
+            playerActiveQuest.remove(player);
+            runningTasks.remove(player);
+        }else {
+            playerActiveQuest.put(player, activeQuest);
+        }
     }
 
     public static void activateQuestTracking(Player player){
-        ConfigurationSection parametersSection = playerActiveQuest.get(player).getConfig().getConfigurationSection("questParameters");
-        if(parametersSection.contains("location")){
-            List<String> preFormatLocation = List.of(parametersSection.getString("location").split(","));
+        String preFindLoc = playerActiveQuest.get(player).currentlyActiveQuestPart.getLocation();
+
+        if(preFindLoc != null && !preFindLoc.isEmpty() && !preFindLoc.isBlank()){
+            List<String> preFormatLocation = List.of(preFindLoc.split(","));
+
+            if(preFormatLocation.size() < 3)return;
 
             List<Integer> coords = IntStream.range(0, 3)
                     .mapToObj(i -> Integer.parseInt(preFormatLocation.get(i)))
                     .toList();
 
-            World world = Bukkit.getWorld(preFormatLocation.size() > 3 ? preFormatLocation.get(3) : "world");
+            World world = Bukkit.getWorld(preFormatLocation.size() > 3 ? preFormatLocation.get(3) : player.getWorld().getName());
 
             Location location = new Location(world, coords.get(0), coords.get(1), coords.get(2));
 
@@ -45,11 +53,14 @@ public class PlayerQuestTracker {
 
 
             BukkitRunnable playerTrackTask = new BukkitRunnable() {
-                QuestPackage currentlyActivePackage = playerActiveQuest.get(player);
+                final QuestPackage currentlyActivePackage = playerActiveQuest.get(player).questPackage;
                 @Override
                 public void run() {
-                    if(!Bukkit.getOnlinePlayers().contains(player)) this.cancel();
-                    if(currentlyActivePackage != playerActiveQuest.get(player)) {
+                    if(!Bukkit.getOnlinePlayers().contains(player)) {
+                        this.cancel();
+                        runningTasks.remove(player);
+                    }
+                    if(currentlyActivePackage != playerActiveQuest.get(player).questPackage) {
                         this.cancel();
                         runningTasks.remove(player); // clean up
                     }

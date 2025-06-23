@@ -115,7 +115,7 @@ public class FinishedQuestsMenu extends MultiPageInventoryGUI {
                         return;
                     }
 
-                    QuestPlaceholder questPlaceholder = QuestPlaceholder.getQuestPlaceholderFromPackage(id, questPackage, player);
+                    QuestPlaceholder questPlaceholder = QuestPlaceholder.getQuestPlaceholderFromPackage(questPackage, player);
 
                     if (Statuses.HIDDEN.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN)) ||
                         !Statuses.FINISHED.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN)) ||

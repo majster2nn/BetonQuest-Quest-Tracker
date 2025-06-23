@@ -20,6 +20,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -34,6 +35,7 @@ public final class BetonQuestQT extends JavaPlugin {
     public double version = 0.3;
     public GUIManager guiManager;
     private BetonQuestLoggerFactory loggerFactory;
+    public BukkitRunnable playerUpdater;
 
     @Override
     public void onLoad(){
@@ -63,6 +65,9 @@ public final class BetonQuestQT extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new Events(), this);
 
         setup();
+
+        playerUpdater = new PlayerUpdater();
+        playerUpdater.runTaskTimer(this, 50, 10);
     }
 
     @Override
@@ -85,6 +90,7 @@ public final class BetonQuestQT extends JavaPlugin {
                 DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
             }
         }
+        playerUpdater.cancel();
         DataBaseManager.disconnectFromDB();
     }
 

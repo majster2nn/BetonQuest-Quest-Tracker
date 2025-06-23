@@ -116,7 +116,7 @@ public class MainQuestsMenu extends MultiPageInventoryGUI {
                         return;
                     }
 
-                    QuestPlaceholder questPlaceholder = QuestPlaceholder.getQuestPlaceholderFromPackage(id, questPackage, player);
+                    QuestPlaceholder questPlaceholder = QuestPlaceholder.getQuestPlaceholderFromPackage(questPackage, player);
 
                     if (!"main".equalsIgnoreCase(QuestPlaceholder.packagesByCategory.getOrDefault(questPackage, "none")) ||
                             Statuses.HIDDEN.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN)) ||
@@ -130,7 +130,7 @@ public class MainQuestsMenu extends MultiPageInventoryGUI {
                     this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
                             .creator(x -> questPlaceholder.getQuestDisplay())
                             .consumer(e -> {
-                                PlayerQuestTracker.setPlayerActiveQuest(player, questPackage);
+                                PlayerQuestTracker.setPlayerActiveQuest(player, questPlaceholder);
                                 PlayerQuestTracker.activateQuestTracking(player);
                                 e.setCancelled(true);
                             })

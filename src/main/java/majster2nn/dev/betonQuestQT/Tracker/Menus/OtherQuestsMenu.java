@@ -115,7 +115,7 @@ public class OtherQuestsMenu extends MultiPageInventoryGUI {
                         return;
                     }
 
-                    QuestPlaceholder questPlaceholder = QuestPlaceholder.getQuestPlaceholderFromPackage(id, questPackage, player);
+                    QuestPlaceholder questPlaceholder = QuestPlaceholder.getQuestPlaceholderFromPackage(questPackage, player);
 
                     if (!"other".equalsIgnoreCase(QuestPlaceholder.packagesByCategory.getOrDefault(questPackage, "none")) ||
                             Statuses.HIDDEN.equals(QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN)) ||

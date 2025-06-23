@@ -1,6 +1,7 @@
 package majster2nn.dev.betonQuestQT.Events;
 
 import majster2nn.dev.betonQuestQT.Database.DataBaseManager;
+import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import org.betonquest.betonquest.BetonQuest;
@@ -35,6 +36,11 @@ public class Events implements Listener {
             QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
                     .put(questPackage.getQuestPath(), statusesMap.getOrDefault(id, Statuses.HIDDEN));
         });
+
+        String activeQuest = DataBaseManager.getValueOfCellInUserTable("currentlyActiveQuest", player);
+        if(!activeQuest.isBlank() && !activeQuest.isEmpty()){
+            PlayerQuestTracker.setPlayerActiveQuest(player, QuestPlaceholder.getQuestPlaceholderFromPackage(BetonQuest.getInstance().getPackages().get(activeQuest), player));
+        }
     }
 
     @EventHandler
@@ -62,5 +68,10 @@ public class Events implements Listener {
         }
 
         DataBaseManager.addColumnValueToUserTable("username", player.getName(), player);
+        DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(), player);
+
+        QuestPlaceholder.packageStatusesMap.remove(player);
+        PlayerQuestTracker.setPlayerActiveQuest(player, null);
+
     }
 }
