@@ -162,6 +162,17 @@ public class PathFinder {
             for(int z = -1; z <= 1; z++) {
                 for (int x = -1; x <= 1; x++) {
                     if(!(x == 0 && z == 0)) {
+
+                        if (x != 0 && z != 0) {
+                            // Check if horizontal or vertical block is obstructed
+                            Location horizontal = location.clone().add(x, 0, 0);
+                            Location vertical = location.clone().add(0, 0, z);
+
+                            if (isObstructed(horizontal) || isObstructed(vertical)) {
+                                continue; // Skip this diagonal move
+                            }
+                        }
+
                         Location loc = new Location(location.getWorld(), location.getBlockX() + x, location.getBlockY(), location.getBlockZ() + z);
 
                         // usual unchanged y
@@ -173,7 +184,7 @@ public class PathFinder {
                         if (!isObstructed(loc.clone().add(-x, 2, -z))) {
                             Location nLoc = loc.clone().add(0, 1, 0);
                             if (canStandAt(nLoc)) {
-                                reachNode(nLoc, expense + 1.4142);
+                                reachNode(nLoc, expense + 10);
                             }
                         }
 
@@ -181,7 +192,7 @@ public class PathFinder {
                         if (!isObstructed(loc.clone().add(0, 1, 0))) {
                             Location nLoc = loc.clone().add(0, -1, 0);
                             if (canStandAt(nLoc)) {
-                                reachNode(nLoc, expense + 1.4142);
+                                reachNode(nLoc, expense + 10);
                             } else if (!isObstructed(nLoc) && !isObstructed(nLoc.clone().add(0, 1, 0))) {
                                 int drop = 1;
                                 while (drop <= maxFallDistance && !isObstructed(loc.clone().add(0, -drop, 0))) {
