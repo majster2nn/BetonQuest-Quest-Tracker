@@ -81,7 +81,6 @@ public class QuestPlaceholder {
             if(mcVersionsSupported.contains(Bukkit.getMinecraftVersion())){
                 CustomModelDataComponent component = displayMeta.getCustomModelDataComponent();
                 component.setStrings(List.of(item[1]));
-                System.out.println(item[1]);
                 displayMeta.setCustomModelDataComponent(component);
             }else{
                 displayMeta.setCustomModelData(Integer.parseInt(item[1]));

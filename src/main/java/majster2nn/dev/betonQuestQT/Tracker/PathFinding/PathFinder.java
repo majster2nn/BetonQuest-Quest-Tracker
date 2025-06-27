@@ -256,6 +256,9 @@ public class PathFinder {
 
     public boolean isObstructed(Location loc)
     {
+        if(loc == null || loc.getWorld() == null){
+            return true;
+        }
         return loc.getBlock().getType().isSolid();
     }
 

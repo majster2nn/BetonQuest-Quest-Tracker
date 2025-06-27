@@ -9,6 +9,7 @@ import majster2nn.dev.betonQuestQT.Tracker.BQEvents.FinishQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.HideQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.LockQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.Menus.ButtonVisualsStorage;
+import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
 import majster2nn.dev.betonQuestQT.Tracker.Placeholders.QuestStatus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
@@ -73,12 +74,16 @@ public final class BetonQuestQT extends JavaPlugin {
     @Override
     public void onDisable() {
         for(Player player : Bukkit.getOnlinePlayers()){
-            Map<String, List<String>> statusesMap = new HashMap<>();
+            Map<String, List<String>> statusesMap = new HashMap<>(){{
+                put("activeQuests", new ArrayList<>());
+                put("lockedQuests", new ArrayList<>());
+                put("finishedQuests", new ArrayList<>());
+            }};
 
             BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
                 if(!questPackage.getTemplates().contains("trackedQuest")){return;}
 
-                Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage, Statuses.HIDDEN);
+                Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
                 switch (status) {
                     case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
                     case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);
@@ -89,6 +94,9 @@ public final class BetonQuestQT extends JavaPlugin {
             for(String key : statusesMap.keySet()){
                 DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
             }
+
+            DataBaseManager.addColumnValueToUserTable("username", player.getName(), player);
+            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(), player);
         }
         playerUpdater.cancel();
         DataBaseManager.disconnectFromDB();
