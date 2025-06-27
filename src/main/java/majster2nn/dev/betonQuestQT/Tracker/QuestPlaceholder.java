@@ -160,7 +160,11 @@ public class QuestPlaceholder {
 
         update(player);
 
-        String lore = currentlyActiveQuestPart.getDesc();
+        String lore = null;
+
+        if(currentlyActiveQuestPart != null){
+            lore = currentlyActiveQuestPart.getDesc();
+        }
 
         if(lore == null || lore.isBlank() || lore.isEmpty()){
             lore = "";
