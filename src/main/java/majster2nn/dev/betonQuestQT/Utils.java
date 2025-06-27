@@ -36,7 +36,7 @@ public class Utils {
             StringBuilder colorCode = new StringBuilder();
 
             for (int i = 0; i < word.length(); i++) {
-                char ch = word.charAt(i);
+                char ch = word.toLowerCase().charAt(i);
 
                 if (ch == '&') {
                     if (currentText.length() > 0) {

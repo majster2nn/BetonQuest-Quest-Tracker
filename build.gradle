@@ -30,6 +30,7 @@ repositories {
 
 dependencies {
     compileOnly 'org.betonquest:betonquest:3.0.0-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT'
     compileOnly 'io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT'
     implementation "net.kyori:adventure-platform-bukkit:4.3.4"
 

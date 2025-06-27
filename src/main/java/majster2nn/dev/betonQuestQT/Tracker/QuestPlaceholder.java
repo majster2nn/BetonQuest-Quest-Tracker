@@ -11,11 +11,13 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.id.ConditionID;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -65,13 +67,28 @@ public class QuestPlaceholder {
         String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
         ConfigurationSection config = questPackage.getConfig();
 
-        String material = Utils.getSafeString(config, "questParameters", "display");
-        Material mat = Material.matchMaterial(material != null ? material.toUpperCase() : "");
+        String[] item = Utils.getSafeString(config, "questParameters", "display").split(",");
+        Material mat = Material.matchMaterial(item[0] != null ? item[0].toUpperCase() : "");
         if(mat == null){
-            logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no material found for \"" + material + "\", defaulting to DIRT..."));
+            logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no material found for \"" + item[0] + "\", defaulting to DIRT..."));
             mat = Material.DIRT;
         }
         ItemStack display = new ItemStack(mat);
+
+        if(item.length > 1 && !item[1].isEmpty()){
+            ItemMeta displayMeta = display.getItemMeta();
+            List<String> mcVersionsSupported = List.of("1.21.4", "1.21.5");
+            if(mcVersionsSupported.contains(Bukkit.getMinecraftVersion())){
+                CustomModelDataComponent component = displayMeta.getCustomModelDataComponent();
+                component.setStrings(List.of(item[1]));
+                System.out.println(item[1]);
+                displayMeta.setCustomModelDataComponent(component);
+            }else{
+                displayMeta.setCustomModelData(Integer.parseInt(item[1]));
+            }
+
+            display.setItemMeta(displayMeta);
+        }
 
         String questName = Utils.getSafeString(config, "questParameters.name", lang);
 

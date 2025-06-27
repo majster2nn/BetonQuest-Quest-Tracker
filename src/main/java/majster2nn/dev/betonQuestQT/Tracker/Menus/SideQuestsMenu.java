@@ -3,6 +3,7 @@ package majster2nn.dev.betonQuestQT.Tracker.Menus;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
+import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import net.kyori.adventure.text.Component;
@@ -128,7 +129,11 @@ public class SideQuestsMenu extends MultiPageInventoryGUI {
 
                     this.addButton(currentSlot[0], currentPage[0], new InventoryButton()
                             .creator(x -> questPlaceholder.getQuestDisplay())
-                            .consumer(e -> e.setCancelled(true))
+                            .consumer(e -> {
+                                PlayerQuestTracker.setPlayerActiveQuest(player, questPlaceholder);
+                                PlayerQuestTracker.activateQuestTracking(player);
+                                e.setCancelled(true);
+                            })
                     );
                     currentSlot[0]++;
                     if(currentSlot[0] == 45){

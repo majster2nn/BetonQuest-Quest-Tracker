@@ -1,11 +1,11 @@
 menuTranslations:
   main-menu:
-    en-US: "Menu"
-    pl-PL: "Menu"
+    en-US: "Menu \uE001\uE001\uE001\uE001"
+    pl-PL: "Menu \uE001\uE001\uE001\uE001"
 
   header-main:
-    en-US: "Main Quests"
-    pl-PL: "Zadania Główne"
+    en-US: "Main Quests \uE002"
+    pl-PL: "Zadania Główne \uE002"
     fr-FR: "Quêtes"
 
   header-side:
@@ -71,27 +71,27 @@ buttonVisuals:
     displayMaterial: paper
   mainQuestButton:
     text:
-      en-US: "Filters"
-      pl-PL: "Filtry"
-    displayMaterial: paper
+      en-US: "Main"
+      pl-PL: "Główne"
+    displayMaterial: gold_ingot
     slot: 19
   sideQuestButton:
     text:
-      en-US: "Filters"
-      pl-PL: "Filtry"
-    displayMaterial: paper
+      en-US: "Side"
+      pl-PL: "Poboczne"
+    displayMaterial: iron_ingot
     slot: 21
   otherQuestButton:
     text:
-      en-US: "Filters"
-      pl-PL: "Filtry"
-    displayMaterial: paper
+      en-US: "Other"
+      pl-PL: "Inne"
+    displayMaterial: book
     slot: 23
   finishedQuestButton:
     text:
-      en-US: "Filters"
-      pl-PL: "Filtry"
-    displayMaterial: paper
+      en-US: "Finished"
+      pl-PL: "Ukończone"
+    displayMaterial: writable_book
     slot: 25
 
 filters:
@@ -100,3 +100,4 @@ filters:
   - "exploration"
   - "resource_collection"
   - "daily"
+  - "fighting"
