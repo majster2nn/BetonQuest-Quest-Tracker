@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class PathFinder {
     private final Location startLocation;
-    private Location endLocation = null;
+    private Location endLocation;
 
     private final Node startNode;
     private Node endNode;

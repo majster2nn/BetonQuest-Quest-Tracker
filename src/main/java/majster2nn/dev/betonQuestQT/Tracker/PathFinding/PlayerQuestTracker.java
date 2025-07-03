@@ -79,7 +79,7 @@ public class PlayerQuestTracker {
                         playerLocation = playerLocation.add(0, 1, 0);
                     }
 
-                    PathFinder pathFinder = new PathFinder(playerLocation, location, 1500, true, 5);
+                    PathFinder pathFinder = new PathFinder(playerLocation, location, 4000, true, 5);
                     List<Location> locationsToSpawnAt = new ArrayList<>(Arrays.asList(pathFinder.findPath()));
                     List<Location> processedLocations = new ArrayList<>();
 

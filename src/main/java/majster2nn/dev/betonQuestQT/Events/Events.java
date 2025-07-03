@@ -68,8 +68,11 @@ public class Events implements Listener {
         }
 
         DataBaseManager.addColumnValueToUserTable("username", player.getName(), player);
-        DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(), player);
-
+        if(PlayerQuestTracker.getPlayerActiveQuest(player) != null) {
+            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(), player);
+        }else{
+            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", " ", player);
+        }
         QuestPlaceholder.packageStatusesMap.remove(player);
         PlayerQuestTracker.setPlayerActiveQuest(player, null);
 
