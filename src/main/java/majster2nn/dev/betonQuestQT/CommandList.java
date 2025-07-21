@@ -41,6 +41,12 @@ public class CommandList {
                                 return 0;
                             }
                         }))
+//                .then(Commands.literal("testMenu")
+//                        .executes(x -> {
+//                            if(!(x.getSource().getSender() instanceof Player player)) return 0;
+//                            MainQuestHoverMenu.questDisplay(player, player.getLocation().clone().add(0, 0.7, 0));
+//                            return 1;
+//                        }))
                 .build()
         );
 

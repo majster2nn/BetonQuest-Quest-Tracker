@@ -1,24 +1,33 @@
 package majster2nn.dev.betonQuestQT.Events;
 
-import majster2nn.dev.betonQuestQT.Database.DataBaseManager;
 import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
+import majster2nn.dev.betonQuestQT.data.DataBaseManager;
+import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Events implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
+        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(e.getPlayer());
+        PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
+        if(playerData.getLanguage().isEmpty() ||
+           playerData.getLanguage().get().equals("default")){
+            playerData.setLanguage(BetonQuest.getInstance().getDefaultLanguage());
+            BetonQuest.getInstance().getPlayerDataStorage().put(profile, playerData);
+        }
+        
         Player player = e.getPlayer();
         Map<String, Statuses> statusesMap = new HashMap<>();
         for(String key : DataBaseManager.getValueOfCellInUserTable("activeQuests", player).split(",")){
@@ -46,33 +55,8 @@ public class Events implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
         Player player = e.getPlayer();
-        Map<String, List<String>> statusesMap = new HashMap<>(){{
-            put("activeQuests", new ArrayList<>());
-            put("lockedQuests", new ArrayList<>());
-            put("finishedQuests", new ArrayList<>());
-        }};
+        PlayerDataManager.savePlayerData(player);
 
-        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
-            if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-
-            Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
-            switch (status) {
-                case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
-                case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);
-                case FINISHED -> statusesMap.computeIfAbsent("finishedQuests", x -> new ArrayList<>()).add(id);
-            }
-        });
-
-        for(String key : statusesMap.keySet()){
-            DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
-        }
-
-        DataBaseManager.addColumnValueToUserTable("username", player.getName(), player);
-        if(PlayerQuestTracker.getPlayerActiveQuest(player) != null) {
-            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(), player);
-        }else{
-            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", " ", player);
-        }
         QuestPlaceholder.packageStatusesMap.remove(player);
         PlayerQuestTracker.setPlayerActiveQuest(player, null);
 

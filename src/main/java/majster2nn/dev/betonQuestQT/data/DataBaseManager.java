@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Database;
+package majster2nn.dev.betonQuestQT.data;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import net.kyori.adventure.text.Component;
@@ -32,7 +32,7 @@ public class DataBaseManager {
     public static void createTables(){
         String sql ="CREATE TABLE IF NOT EXISTS userData (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "uuid STRING, UNIQUE" +
+                "uuid STRING UNIQUE," +
                 "username STRING," +
                 "activeQuests STRING," +
                 "lockedQuests STRING," +
@@ -40,7 +40,7 @@ public class DataBaseManager {
                 "currentlyActiveQuest STRING)";
 
         String sql1 ="CREATE TABLE IF NOT EXISTS questData (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "questName STRING UNIQUE)";
 
         try{
@@ -62,7 +62,7 @@ public class DataBaseManager {
 
         updateTableColumns(databaseConnection, "questData", Map.ofEntries(
                 Map.entry("questName", "STRING UNIQUE"),
-                Map.entry("questId", "STRING UINIQUE")
+                Map.entry("questId", "STRING UNIQUE")
         ));
 
     }
@@ -112,7 +112,7 @@ public class DataBaseManager {
     public static String getValueOfCellInUserTable(String data, Player player) {
         String uuid = player.getUniqueId().toString();
         try {
-            ResultSet rs = stmt.executeQuery("SELECT " + data + " FROM userData WHERE UUID = '" + uuid + "'");
+            ResultSet rs = stmt.executeQuery("SELECT " + data + " FROM userData WHERE uuid = '" + uuid + "'");
             if (rs.next()) {
                 String value = rs.getString(1);
                 return value != null ? value : "";

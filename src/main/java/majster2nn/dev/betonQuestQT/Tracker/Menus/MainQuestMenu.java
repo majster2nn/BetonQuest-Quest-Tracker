@@ -3,6 +3,7 @@ package majster2nn.dev.betonQuestQT.Tracker.Menus;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryGUI;
+import majster2nn.dev.betonQuestQT.Tracker.Menus.buttons.ButtonVisualsStorage;
 import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;

@@ -57,7 +57,7 @@ public class QuestPlaceholder {
             throw new RuntimeException(e);
         }
 
-    }//TODO questParts connection with PlayerQuestTracker
+    }
 
     public static QuestPlaceholder getQuestPlaceholderFromPackage(QuestPackage questPackage, Player player){
         ComponentLogger logger = BetonQuestQT.getInstance().getComponentLogger();
@@ -92,11 +92,11 @@ public class QuestPlaceholder {
         String questName = Utils.getSafeString(config, "questParameters.name", lang);
 
         if(questName == null){
-            logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no name specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to en-US..."));
-            questName = Utils.getSafeString(config, "questParameters.name", "en-US");
+            logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no name specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to "+ BetonQuest.getInstance().getDefaultLanguage() +"..."));
+            questName = Utils.getSafeString(config, "questParameters.name", BetonQuest.getInstance().getDefaultLanguage());
 
             if(questName == null) {
-                logger.error(Component.text("Couldn't default to en-US for package: " + questPackage + ", using default debug values..."));
+                logger.error(Component.text("Couldn't default to"+ BetonQuest.getInstance().getDefaultLanguage() +" for package: " + questPackage + ", using default debug values..."));
                 questName = "ERROR - contact administration";
             }
         }
@@ -124,11 +124,11 @@ public class QuestPlaceholder {
                 String desc = config.getString("questParameters.questParts." + key + ".desc." + lang);
 
                 if(desc == null){
-                    logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no desc specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to en-US..."));
-                    desc = Utils.getSafeString(config, "questParameters.desc", "en-US");
+                    logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no desc specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to "+ BetonQuest.getInstance().getDefaultLanguage() +"..."));
+                    desc = config.getString("questParameters.questParts." + key + ".desc." + BetonQuest.getInstance().getDefaultLanguage());
 
                     if(desc == null) {
-                        logger.error(Component.text("Couldn't default to en-US for package: " + questPackage + ", using default debug values..."));
+                        logger.error(Component.text("Couldn't default to "+ BetonQuest.getInstance().getDefaultLanguage() +" for package: " + questPackage + ", using default debug values..."));
                         desc = "ERROR - contact administration";
                     }
                 }
@@ -149,7 +149,7 @@ public class QuestPlaceholder {
         );
     }
 
-    public void setQuestDisplay() throws QuestException {
+    public void setQuestDisplay() {
         ItemMeta questDisplayMeta = displayMaterial.getItemMeta();
 
         String formattedName = formatLineWithVariables(name);
@@ -176,33 +176,35 @@ public class QuestPlaceholder {
 
         status = packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
 
-
-        switch(status){
-            case ACTIVE:{
-                loreComponents.add(Component
-                        .text(BetonQuestQT.getInstance().getMenuTranslation("quest_active", player))
-                        .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                        .color(NamedTextColor.GREEN));
-                break;
-            }
-            case FINISHED:{
-                loreComponents.clear();
-                loreComponents.add(Component
-                        .text(BetonQuestQT.getInstance().getMenuTranslation("quest_finished", player))
-                        .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                        .color(NamedTextColor.GRAY));
-                break;
-            }
-            case LOCKED:{
-                loreComponents.clear();
-                loreComponents.add(Component
-                        .text(BetonQuestQT.getInstance().getMenuTranslation("quest_locked", player))
-                        .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                        .color(NamedTextColor.RED));
-                break;
-            }
-            default:{
-                break;
+        ConfigurationSection settings = BetonQuestQT.getInstance().getConfig().getConfigurationSection("settings");
+        if(settings != null && settings.contains("questStatusVisuals") && settings.getBoolean("questStatusVisuals")) {
+            switch (status) {
+                case ACTIVE: {
+                    loreComponents.add(Component
+                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_active", player))
+                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                            .color(NamedTextColor.GREEN));
+                    break;
+                }
+                case FINISHED: {
+//                loreComponents.clear(); TODO add an option to specify if the lore should be hidden after finished or nah
+                    loreComponents.add(Component
+                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_finished", player))
+                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                            .color(NamedTextColor.GRAY));
+                    break;
+                }
+                case LOCKED: {
+//                loreComponents.clear(); TODO add an option to specify if the lore should be hidden if locked or nah
+                    loreComponents.add(Component
+                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_locked", player))
+                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                            .color(NamedTextColor.RED));
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
@@ -216,56 +218,32 @@ public class QuestPlaceholder {
         return questDisplay;
     }
 
-    public String formatLineWithVariables(String line) throws QuestException {
+    public String formatLineWithVariables(String line) {
         StringBuilder formattedString = new StringBuilder();
         StringBuilder preFormatVariable = new StringBuilder();
-        StringBuilder preFormatGlobalVariable = new StringBuilder();
         boolean caughtVariable = false;
-        boolean caughtGlobalVariable = false;
 
         for (String str : line.split("")) {
-            switch (str) {
-                case "$": {
-                    if (!caughtGlobalVariable) {
-                        caughtGlobalVariable = true;
-                        preFormatGlobalVariable.append("%");
-                    } else {
-                        caughtGlobalVariable = false;
-                        preFormatGlobalVariable.append("%");
-                        if(caughtVariable){
-                            preFormatVariable.append(BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatGlobalVariable.toString(), null));
-                        }else{
-                            formattedString.append(BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatGlobalVariable.toString(), null));
-                        }
-                        preFormatGlobalVariable = new StringBuilder();
+            if (str.equals("%")) {
+                if (!caughtVariable) {
+                    caughtVariable = true;
+                    preFormatVariable.append("%");
+                } else {
+                    caughtVariable = false;
+                    preFormatVariable.append("%");
+                    try {
+                        formattedString.append(
+                                BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatVariable.toString(), BetonQuest.getInstance().getProfileProvider().getProfile(player)));
+                    } catch (QuestException e) {
+                        throw new RuntimeException(e);
                     }
-                    break;
+                    preFormatVariable = new StringBuilder();
                 }
-                case "%": {
-                    if (!caughtVariable) {
-                        caughtVariable = true;
-                        preFormatVariable.append("%");
-                    } else{
-                        caughtVariable = false;
-                        preFormatVariable.append("%");
-                        try {
-                            formattedString.append(
-                                    BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatVariable.toString(), BetonQuest.getInstance().getProfileProvider().getProfile(player)));
-                        } catch (QuestException e) {
-                            throw new RuntimeException(e);
-                        }
-                        preFormatVariable = new StringBuilder();
-                    }
-                    break;
-                }
-                default: {
-                    if(caughtGlobalVariable){
-                        preFormatGlobalVariable.append(str);
-                    }else if (caughtVariable) {
-                        preFormatVariable.append(str);
-                    }else {
-                        formattedString.append(str);
-                    }
+            } else {
+                if (caughtVariable) {
+                    preFormatVariable.append(str);
+                } else {
+                    formattedString.append(str);
                 }
             }
 

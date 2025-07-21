@@ -2,6 +2,7 @@ package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
 
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
+import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.api.quest.event.online.OnlineEvent;
@@ -19,5 +20,6 @@ public class LockQuest implements OnlineEvent {
         Player player = onlineProfile.getPlayer();
         QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
                 .put(id, Statuses.LOCKED);
+        PlayerDataManager.savePlayerData(player);
     }
 }

@@ -1,11 +1,11 @@
 menuTranslations:
   main-menu:
-    en-US: "Menu \uE001\uE001\uE001\uE001"
-    pl-PL: "Menu \uE001\uE001\uE001\uE001"
+    en-US: "Menu"
+    pl-PL: "Menu"
 
   header-main:
-    en-US: "Main Quests \uE002"
-    pl-PL: "Zadania Główne \uE002"
+    en-US: "Main Quests"
+    pl-PL: "Zadania Główne"
     fr-FR: "Quêtes"
 
   header-side:
@@ -54,45 +54,59 @@ buttonVisuals:
       en-US: "Go back"
       pl-PL: "Wróć"
     displayMaterial: red_stained_glass_pane
-  previousPageButton:
+  previousPage:
     text:
       en-US: "Previous page"
       pl-PL: "Poprzednia strona"
     displayMaterial: arrow
-  nextPageButton:
+  nextPage:
     text:
       en-US: "Next page"
       pl-PL: "Następna strona"
     displayMaterial: arrow
-  filterButton:
+
+  filters:
     text:
       en-US: "Filters"
       pl-PL: "Filtry"
     displayMaterial: paper
-  mainQuestButton:
+
+  mainQuest:
     text:
       en-US: "Main"
       pl-PL: "Główne"
     displayMaterial: gold_ingot
     slot: 19
-  sideQuestButton:
+  sideQuest:
     text:
       en-US: "Side"
       pl-PL: "Poboczne"
     displayMaterial: iron_ingot
     slot: 21
-  otherQuestButton:
+  otherQuest:
     text:
       en-US: "Other"
       pl-PL: "Inne"
     displayMaterial: book
     slot: 23
-  finishedQuestButton:
+  finishedQuest:
     text:
       en-US: "Finished"
       pl-PL: "Ukończone"
     displayMaterial: writable_book
     slot: 25
+
+  fillerRed:
+    text:
+      en-US: ""
+      pl-PL: ""
+    displayMaterial: red_stained_glass_pane
+
+  fillerBlack:
+    text:
+      en-US: ""
+      pl-PL: ""
+    displayMaterial: black_stained_glass_pane
 
 filters:
   - "seasonal"
@@ -101,3 +115,47 @@ filters:
   - "resource_collection"
   - "daily"
   - "fighting"
+
+categories:
+  main:
+    en-US: "Main Quests"
+    pl-PL: "Zadania główne"
+  side:
+    en-US: "Side quests"
+    pl-PL: "Zadania poboczne"
+  other:
+    en-US: "Other quests"
+    pl-PL: "Inne zadania"
+
+layouts:
+  mainMenu:
+    layout:
+      - "ABABABABA"
+      - "#########"
+      - "#C#D#E#F#"
+      - "#########"
+      - "ABABABABA"
+    buttons:
+      A: "fillerRed"
+      B: "fillerBlack"
+      C: "mainQuest"
+      D: "sideQuest"
+      E: "otherQuest"
+      F: "finishedQuest"
+  questMenus:
+    layout:
+      - "ABABABABA"
+      - ""
+      - ""
+      - ""
+      - "ABABABABA"
+    buttons:
+      A: "fillerRed"
+      B: "fillerBlack"
+      C: "nextPage"
+      D: "previousPage"
+      E: "back"
+      F: "filters"
+
+settings:
+  questStatusVisuals: true

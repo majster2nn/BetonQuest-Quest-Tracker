@@ -1,6 +1,6 @@
 package majster2nn.dev.betonQuestQT;
 
-import majster2nn.dev.betonQuestQT.Database.DataBaseManager;
+import fr.perrier.cupcodeapi.CupCodeAPI;
 import majster2nn.dev.betonQuestQT.Events.Events;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIListener;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.GUIManager;
@@ -8,11 +8,11 @@ import majster2nn.dev.betonQuestQT.Tracker.BQEvents.ActiveQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.FinishQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.HideQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.LockQuestFactory;
-import majster2nn.dev.betonQuestQT.Tracker.Menus.ButtonVisualsStorage;
-import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
+import majster2nn.dev.betonQuestQT.Tracker.Menus.buttons.ButtonVisualsStorage;
 import majster2nn.dev.betonQuestQT.Tracker.Placeholders.QuestStatus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.Tracker.Statuses;
+import majster2nn.dev.betonQuestQT.data.DataBaseManager;
+import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -26,9 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public final class BetonQuestQT extends JavaPlugin {
     public File config;
@@ -49,6 +47,9 @@ public final class BetonQuestQT extends JavaPlugin {
             getLogger().warning("BetonQuest plugin not found. This plugin requires BetonQuest");
             getServer().getPluginManager().disablePlugin(this);
         }
+
+        CupCodeAPI.enable(this);
+
         this.guiManager = new GUIManager();
 
         BetonQuest betonQuest = BetonQuest.getInstance();
@@ -74,31 +75,12 @@ public final class BetonQuestQT extends JavaPlugin {
     @Override
     public void onDisable() {
         for(Player player : Bukkit.getOnlinePlayers()){
-            Map<String, List<String>> statusesMap = new HashMap<>(){{
-                put("activeQuests", new ArrayList<>());
-                put("lockedQuests", new ArrayList<>());
-                put("finishedQuests", new ArrayList<>());
-            }};
-
-            BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
-                if(!questPackage.getTemplates().contains("trackedQuest")){return;}
-
-                Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
-                switch (status) {
-                    case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
-                    case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);
-                    case FINISHED -> statusesMap.computeIfAbsent("finishedQuests", x -> new ArrayList<>()).add(id);
-                }
-            });
-
-            for(String key : statusesMap.keySet()){
-                DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
-            }
-
-            DataBaseManager.addColumnValueToUserTable("username", player.getName(), player);
-            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(), player);
+            PlayerDataManager.savePlayerData(player);
         }
         playerUpdater.cancel();
+
+        CupCodeAPI.disable();
+
         DataBaseManager.disconnectFromDB();
     }
 

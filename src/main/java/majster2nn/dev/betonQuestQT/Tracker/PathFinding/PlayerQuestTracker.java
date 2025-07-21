@@ -31,6 +31,8 @@ public class PlayerQuestTracker {
     }
 
     public static void activateQuestTracking(Player player){
+        if(playerActiveQuest.get(player).currentlyActiveQuestPart == null) return;
+        //TODO add a possibility to add checkpoints that the tracker needs to run through so that the tracker points to a point that is set and tries to find a path from the player to there and from there to another point/last point and track from player to the nearest point and deactivate the ones that are further from the final location
         String preFindLoc = playerActiveQuest.get(player).currentlyActiveQuestPart.getLocation();
 
         if(preFindLoc != null && !preFindLoc.isEmpty() && !preFindLoc.isBlank()){
