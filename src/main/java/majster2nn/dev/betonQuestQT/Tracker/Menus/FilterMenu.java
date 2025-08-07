@@ -5,6 +5,7 @@ import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
 import majster2nn.dev.betonQuestQT.Tracker.Menus.buttons.ButtonVisualsStorage;
+import majster2nn.dev.betonQuestQT.Tracker.Menus.display.QuestMenus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -70,11 +71,11 @@ public class FilterMenu extends MultiPageInventoryGUI {
 
                     switch(slot){
                         case 46:{
-                            display = ButtonVisualsStorage.getButtonItem("previousPageButton", lang);
+                            display = ButtonVisualsStorage.getButtonItem("previousPage", lang);
                             break;
                         }
                         case 52:{
-                            display = ButtonVisualsStorage.getButtonItem("nextPageButton", lang);
+                            display = ButtonVisualsStorage.getButtonItem("nextPage", lang);
                             break;
                         }
                         default:{
@@ -102,17 +103,20 @@ public class FilterMenu extends MultiPageInventoryGUI {
                 .creator(p -> {
                     Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(p);
                     String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
-                    return ButtonVisualsStorage.getButtonItem("backButton", lang);
+                    return ButtonVisualsStorage.getButtonItem("back", lang);
                 })
-                .consumer(e -> {
-                    Player player = (Player) e.getWhoClicked();
-                    switch(whichMenu){
-                        case "finished" -> BetonQuestQT.getInstance().guiManager.openGui(new FinishedQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-finished", player)), player);
-                        case "side" -> BetonQuestQT.getInstance().guiManager.openGui(new SideQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-side", player)), player);
-                        case "main" -> BetonQuestQT.getInstance().guiManager.openGui(new MainQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-main", player)), player);
-                        case "other" -> BetonQuestQT.getInstance().guiManager.openGui(new OtherQuestsMenu(BetonQuestQT.getInstance().getMenuTranslation("header-other", player)), player);
-                    }
-
+                .consumer(event -> {
+                    Player player = (Player) event.getWhoClicked();
+                    BetonQuestQT.getInstance().guiManager.openGui(
+                            new QuestMenus(
+                                    BetonQuestQT.getInstance().getMenuTranslation(
+                                            "header-" + whichMenu,
+                                            player
+                                    ),
+                                    whichMenu
+                            ),
+                            player
+                    );
                 });
     }
 

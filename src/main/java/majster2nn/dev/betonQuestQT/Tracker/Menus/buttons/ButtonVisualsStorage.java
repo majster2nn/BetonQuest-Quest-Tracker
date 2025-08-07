@@ -17,12 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ButtonVisualsStorage {
-    private static Map<String, ButtonEntry> buttonVisualsMap = new HashMap<>();
-
-    public ButtonVisualsStorage(){
-        setButtonsMaterials();
-    }
-
+    private static final Map<String, ButtonEntry> buttonVisualsMap = new HashMap<>();
 
     public static void setButtonsMaterials() {
         FileConfiguration config = BetonQuestQT.getInstance().getConfig();
@@ -33,14 +28,14 @@ public class ButtonVisualsStorage {
             return;
         }
 
-        for(String buttonKey : buttonsSection.getKeys(false)){
+        for(String buttonKey : buttonsSection.getKeys(false)) {
             ConfigurationSection buttonSection = buttonsSection.getConfigurationSection(buttonKey);
             Map<String, String> langMap = new HashMap<>();
             ConfigurationSection textSection = buttonSection.getConfigurationSection("text");
-            if(textSection == null){
+            if (textSection == null) {
                 langMap.put(BetonQuest.getInstance().getDefaultLanguage(), "ERROR");
-            }else{
-                for(String langKey : textSection.getKeys(false)){
+            } else {
+                for (String langKey : textSection.getKeys(false)) {
                     langMap.put(langKey, buttonSection.getString("text." + langKey));
                 }
             }
@@ -50,21 +45,17 @@ public class ButtonVisualsStorage {
             Material material = Material.matchMaterial(display.getFirst().toUpperCase());
             //CustomModelData modelData -- TODO ADD CUSTOM MODEL DATA SUPPORT
 
-            String slotNum = buttonSection.getString("slot");
-
-            if(slotNum == null || slotNum.isBlank()){
-                buttonVisualsMap.put(buttonKey, new ButtonEntry(material, langMap));
-                continue;
+            String events = "";
+            if (buttonSection.contains("events")) {
+                events += String.join(";", buttonSection.getStringList("events"));
             }
 
-            int slot = Integer.parseInt(slotNum);
-
-            buttonVisualsMap.put(buttonKey, new ButtonEntry(material, langMap, slot));
+            buttonVisualsMap.put(buttonKey, new ButtonEntry(material, langMap, events));
         }
     }
 
     public static ItemStack getButtonItem(String buttonName, String lang){
-        ButtonEntry preFormatButton = buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.DIRT, new HashMap<>()));
+        ButtonEntry preFormatButton = buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>()));
         ItemStack button = new ItemStack(preFormatButton.getMaterial());
         button.setData(DataComponentTypes.CUSTOM_NAME, Component
                 .text(preFormatButton.getDisplayForLang(lang), NamedTextColor.WHITE)
@@ -73,19 +64,19 @@ public class ButtonVisualsStorage {
     }
 
     public static Material getButtonMaterial(String buttonName){
-        return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.DIRT, new HashMap<>())).getMaterial();
+        return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>())).getMaterial();
     }
 
     public static String getButtonDisplayForLang(String buttonName, String lang){
-        return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.DIRT, new HashMap<>())).getDisplayForLang(lang);
+        return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>())).getDisplayForLang(lang);
     }
 
     public static CustomModelData getButtonModelData(String buttonName){
-        return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.DIRT, new HashMap<>())).getModelData();
+        return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>())).getModelData();
     }
 
-    public static int getButtonSlot(String buttonName){
-        return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.DIRT, new HashMap<>())).getSlot();
+    public static String getButtonEvents(String buttonName){
+        return buttonVisualsMap.get(buttonName) != null ? buttonVisualsMap.get(buttonName).getSpecialParameters() : "";
     }
 }
 

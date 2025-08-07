@@ -54,47 +54,59 @@ buttonVisuals:
       en-US: "Go back"
       pl-PL: "Wróć"
     displayMaterial: red_stained_glass_pane
+    events:
+      - "return"
   previousPage:
     text:
       en-US: "Previous page"
       pl-PL: "Poprzednia strona"
     displayMaterial: arrow
+    events:
+      - "prevPage"
   nextPage:
     text:
       en-US: "Next page"
       pl-PL: "Następna strona"
     displayMaterial: arrow
+    events:
+      - "nextPage"
 
   filters:
     text:
       en-US: "Filters"
       pl-PL: "Filtry"
     displayMaterial: paper
+    events:
+      - "filter"
 
   mainQuest:
     text:
       en-US: "Main"
       pl-PL: "Główne"
     displayMaterial: gold_ingot
-    slot: 19
+    events:
+      - "openMenu:main"
   sideQuest:
     text:
       en-US: "Side"
       pl-PL: "Poboczne"
     displayMaterial: iron_ingot
-    slot: 21
+    events:
+      - "openMenu:side"
   otherQuest:
     text:
       en-US: "Other"
       pl-PL: "Inne"
     displayMaterial: book
-    slot: 23
+    events:
+      - "openMenu:quest"
   finishedQuest:
     text:
       en-US: "Finished"
       pl-PL: "Ukończone"
     displayMaterial: writable_book
-    slot: 25
+    events:
+      - "openMenu:finished"
 
   fillerRed:
     text:
@@ -116,24 +128,14 @@ filters:
   - "daily"
   - "fighting"
 
-categories:
-  main:
-    en-US: "Main Quests"
-    pl-PL: "Zadania główne"
-  side:
-    en-US: "Side quests"
-    pl-PL: "Zadania poboczne"
-  other:
-    en-US: "Other quests"
-    pl-PL: "Inne zadania"
-
 layouts:
   mainMenu:
     layout:
       - "ABABABABA"
-      - "#########"
-      - "#C#D#E#F#"
-      - "#########"
+      - "         "
+      - " C D E F "
+      - "         "
+      - "         "
       - "ABABABABA"
     buttons:
       A: "fillerRed"
@@ -142,13 +144,15 @@ layouts:
       D: "sideQuest"
       E: "otherQuest"
       F: "finishedQuest"
+
   questMenus:
     layout:
       - "ABABABABA"
-      - ""
-      - ""
-      - ""
-      - "ABABABABA"
+      - "         "
+      - "         "
+      - "         "
+      - "         "
+      - "ABDBEFCBA"
     buttons:
       A: "fillerRed"
       B: "fillerBlack"
@@ -159,3 +163,4 @@ layouts:
 
 settings:
   questStatusVisuals: true
+  defaultFillerButton: "fillerRed"

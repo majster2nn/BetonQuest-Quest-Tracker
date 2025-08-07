@@ -9,6 +9,7 @@ import majster2nn.dev.betonQuestQT.Tracker.BQEvents.FinishQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.HideQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.BQEvents.LockQuestFactory;
 import majster2nn.dev.betonQuestQT.Tracker.Menus.buttons.ButtonVisualsStorage;
+import majster2nn.dev.betonQuestQT.Tracker.Menus.layouts.ButtonLayoutContainer;
 import majster2nn.dev.betonQuestQT.Tracker.Placeholders.QuestStatus;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.data.DataBaseManager;
@@ -88,6 +89,8 @@ public final class BetonQuestQT extends JavaPlugin {
         updateConfig();
         resetQuestPackages();
         ButtonVisualsStorage.setButtonsMaterials();
+        ButtonLayoutContainer.loadMainMenuLayout();
+        ButtonLayoutContainer.loadQuestCategoriesMenuslayout();
     }
 
     public void resetQuestPackages(){
@@ -106,11 +109,7 @@ public final class BetonQuestQT extends JavaPlugin {
                 questCategory = "other";
             }
 
-            switch(questCategory){
-                case "main" -> QuestPlaceholder.packagesByCategory.put(questPackage, "main");
-                case "side" -> QuestPlaceholder.packagesByCategory.put(questPackage, "side");
-                case "other" -> QuestPlaceholder.packagesByCategory.put(questPackage, "other");
-            }
+            QuestPlaceholder.packagesByCategory.put(questPackage, questCategory);
 
             String questTags = Utils.getSafeString(questPackage.getConfig(), "questParameters", "tags");
             List<String> tags = questTags != null ? List.of(questTags.split(",")): new ArrayList<>();

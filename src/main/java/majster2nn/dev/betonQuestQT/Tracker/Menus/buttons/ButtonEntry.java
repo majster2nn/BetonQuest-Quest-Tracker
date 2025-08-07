@@ -9,17 +9,17 @@ public class ButtonEntry {
     Material buttonMaterial;
     Map<String, String> buttonDisplayLangMap;
     CustomModelData modelData;
-    int slot;
+    String specialParameters;
 
     public ButtonEntry(Material material, Map<String, String> displayLangMap){
         this.buttonMaterial = material;
         this.buttonDisplayLangMap = displayLangMap;
     }
 
-    public ButtonEntry(Material material, Map<String, String> displayLangMap, int slot){
+    public ButtonEntry(Material material, Map<String, String> displayLangMap, String specialParameters){
         this.buttonMaterial = material;
         this.buttonDisplayLangMap = displayLangMap;
-        this.slot = slot;
+        this.specialParameters = specialParameters;
     }
 
     public ButtonEntry(Material material, Map<String, String> displayLangMap, CustomModelData modelData){
@@ -29,18 +29,15 @@ public class ButtonEntry {
     }
 
     public Material getMaterial(){
-        return buttonMaterial != null ? buttonMaterial : Material.BARRIER;
+        return buttonMaterial != null ? buttonMaterial : Material.AIR;
     }
 
     public String getDisplayForLang(String lang){
-        return buttonDisplayLangMap.getOrDefault(lang, "NO SUCH LANGUAGE FOUND!!!");
+        return buttonDisplayLangMap.getOrDefault(lang, "");
     }
 
     public CustomModelData getModelData(){
         return modelData != null ? modelData : null;
     }
-
-    public int getSlot(){
-        return 0 <= slot && slot <= 53 ? slot : 0;
-    }
+    public String getSpecialParameters() { return specialParameters != null ? specialParameters : null; }
 }

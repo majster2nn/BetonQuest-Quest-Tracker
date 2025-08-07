@@ -77,7 +77,7 @@ public class QuestPlaceholder {
 
         if(item.length > 1 && !item[1].isEmpty()){
             ItemMeta displayMeta = display.getItemMeta();
-            List<String> mcVersionsSupported = List.of("1.21.4", "1.21.5");
+            List<String> mcVersionsSupported = List.of("1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8");
             if(mcVersionsSupported.contains(Bukkit.getMinecraftVersion())){
                 CustomModelDataComponent component = displayMeta.getCustomModelDataComponent();
                 component.setStrings(List.of(item[1]));
