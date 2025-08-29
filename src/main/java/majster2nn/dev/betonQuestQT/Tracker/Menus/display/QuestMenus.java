@@ -94,8 +94,14 @@ public class QuestMenus extends MultiPageInventoryGUI {
         this.addButton(slot, currentPage, new InventoryButton()
                 .creator(x -> questPlaceholder.getQuestDisplay())
                 .consumer(e -> {
-                    PlayerQuestTracker.setPlayerActiveQuest(player, questPlaceholder);
-                    PlayerQuestTracker.activateQuestTracking(player);
+                    Statuses status = QuestPlaceholder.packageStatusesMap
+                            .getOrDefault(player, Map.of())
+                            .getOrDefault(questPlaceholder.questPackage.getQuestPath(), Statuses.HIDDEN);
+
+                    if(status == Statuses.ACTIVE) {
+                        PlayerQuestTracker.setPlayerActiveQuest(player, questPlaceholder);
+                        PlayerQuestTracker.activateQuestTracking(player);
+                    }
                     e.setCancelled(true);
                 }));
     }

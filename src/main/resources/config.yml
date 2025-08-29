@@ -3,6 +3,10 @@ menuTranslations:
     en-US: "Menu"
     pl-PL: "Menu"
 
+  header-filters:
+    en-US: "Filtry"
+    pl-PL: "Filters"
+
   header-main:
     en-US: "Main Quests"
     pl-PL: "Zadania Główne"
@@ -49,7 +53,7 @@ menuTranslations:
     fr-FR: "Bloqué"
 
 buttonVisuals:
-  backButton:
+  back:
     text:
       en-US: "Go back"
       pl-PL: "Wróć"
@@ -132,10 +136,10 @@ layouts:
   mainMenu:
     layout:
       - "ABABABABA"
-      - "         "
-      - " C D E F "
-      - "         "
-      - "         "
+      - "#########"
+      - "#C#D#E#F#"
+      - "#########"
+      - "#########"
       - "ABABABABA"
     buttons:
       A: "fillerRed"
@@ -146,13 +150,7 @@ layouts:
       F: "finishedQuest"
 
   questMenus:
-    layout:
-      - "ABABABABA"
-      - "         "
-      - "         "
-      - "         "
-      - "         "
-      - "ABDBEFCBA"
+
     buttons:
       A: "fillerRed"
       B: "fillerBlack"

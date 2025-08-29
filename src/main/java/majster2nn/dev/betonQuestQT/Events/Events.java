@@ -40,7 +40,7 @@ public class Events implements Listener {
             statusesMap.put(key, Statuses.FINISHED);
         }
 
-        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
+        BetonQuest.getInstance().getQuestPackageManager().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
                     .put(questPackage.getQuestPath(), statusesMap.getOrDefault(id, Statuses.HIDDEN));
@@ -48,7 +48,7 @@ public class Events implements Listener {
 
         String activeQuest = DataBaseManager.getValueOfCellInUserTable("currentlyActiveQuest", player);
         if(!activeQuest.isBlank() && !activeQuest.isEmpty()){
-            PlayerQuestTracker.setPlayerActiveQuest(player, QuestPlaceholder.getQuestPlaceholderFromPackage(BetonQuest.getInstance().getPackages().get(activeQuest), player));
+            PlayerQuestTracker.setPlayerActiveQuest(player, QuestPlaceholder.getQuestPlaceholderFromPackage(BetonQuest.getInstance().getQuestPackageManager().getPackages().get(activeQuest), player));
         }
     }
 

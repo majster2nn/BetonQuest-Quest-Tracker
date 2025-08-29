@@ -2,6 +2,7 @@ package majster2nn.dev.betonQuestQT.Tracker.PathFinding;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ public class PlayerQuestTracker {
     private static final long cooldown = 20;
 
     public static QuestPlaceholder getPlayerActiveQuest(Player player) {
-        return playerActiveQuest.get(player);
+        return playerActiveQuest.getOrDefault(player, null);
     }
 
     public static void setPlayerActiveQuest(Player player, QuestPlaceholder activeQuest) {
@@ -58,13 +59,28 @@ public class PlayerQuestTracker {
                 final QuestPackage currentlyActivePackage = playerActiveQuest.get(player).questPackage;
                 @Override
                 public void run() {
+                    if(getPlayerActiveQuest(player) != null){
+                        if(getPlayerActiveQuest(player).status != Statuses.ACTIVE){
+                            setPlayerActiveQuest(player, null);
+                        }else {
+                            getPlayerActiveQuest(player).update(player);
+                        }
+                    }
+
+                    if(playerActiveQuest.get(player) == null){
+                        this.cancel();
+                        runningTasks.remove(player);
+                        return;
+                    }
                     if(!Bukkit.getOnlinePlayers().contains(player)) {
                         this.cancel();
                         runningTasks.remove(player);
+                        return;
                     }
-                    if(currentlyActivePackage != playerActiveQuest.get(player).questPackage) {
+                    if(currentlyActivePackage != playerActiveQuest.getOrDefault(player, null).questPackage) {
                         this.cancel();
                         runningTasks.remove(player); // clean up
+                        return;
                     }
 
                     RayTraceResult traceResult = player.getWorld().rayTraceBlocks(

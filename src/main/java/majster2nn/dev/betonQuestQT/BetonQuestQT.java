@@ -22,7 +22,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -35,7 +34,6 @@ public final class BetonQuestQT extends JavaPlugin {
     public double version = 0.3;
     public GUIManager guiManager;
     private BetonQuestLoggerFactory loggerFactory;
-    public BukkitRunnable playerUpdater;
 
     @Override
     public void onLoad(){
@@ -68,9 +66,6 @@ public final class BetonQuestQT extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new Events(), this);
 
         setup();
-
-        playerUpdater = new PlayerUpdater();
-        playerUpdater.runTaskTimer(this, 50, 10);
     }
 
     @Override
@@ -78,7 +73,6 @@ public final class BetonQuestQT extends JavaPlugin {
         for(Player player : Bukkit.getOnlinePlayers()){
             PlayerDataManager.savePlayerData(player);
         }
-        playerUpdater.cancel();
 
         CupCodeAPI.disable();
 
@@ -100,7 +94,7 @@ public final class BetonQuestQT extends JavaPlugin {
 
         QuestPlaceholder.tags.addAll(getConfig().getStringList("filters"));
 
-        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
+        BetonQuest.getInstance().getQuestPackageManager().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageByName.put(id, questPackage);
 

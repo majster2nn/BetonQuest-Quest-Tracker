@@ -23,6 +23,7 @@ public class ActiveQuest implements OnlineEvent {
         Player player = onlineProfile.getPlayer();
         QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
                 .put(id, Statuses.ACTIVE);
+
         PlayerDataManager.savePlayerData(player);
     }
 }

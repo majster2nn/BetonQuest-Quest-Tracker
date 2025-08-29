@@ -19,7 +19,7 @@ public class PlayerDataManager {
             put("finishedQuests", new ArrayList<>());
         }};
 
-        BetonQuest.getInstance().getPackages().forEach((id, questPackage) -> {
+        BetonQuest.getInstance().getQuestPackageManager().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
 
             Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);

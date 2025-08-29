@@ -1,8 +1,10 @@
 package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
 
+import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
+import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.api.quest.event.online.OnlineEvent;
@@ -12,9 +14,11 @@ import java.util.HashMap;
 
 public class FinishQuest implements OnlineEvent {
     private String id;
+    private QuestPackage questPackage;
 
-    public FinishQuest(String id){
+    public FinishQuest(String id, QuestPackage questPackage){
         this.id = id;
+        this.questPackage = questPackage;
     }
 
     @Override
@@ -22,6 +26,9 @@ public class FinishQuest implements OnlineEvent {
         Player player = onlineProfile.getPlayer();
         QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
                 .put(id, Statuses.FINISHED);
+        if(PlayerQuestTracker.getPlayerActiveQuest(player).questPackage == questPackage){
+            PlayerQuestTracker.setPlayerActiveQuest(player, null);
+        }
         PlayerDataManager.savePlayerData(player);
     }
 }

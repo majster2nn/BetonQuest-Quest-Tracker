@@ -1,8 +1,10 @@
 package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
 
+import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
 import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
+import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.api.quest.event.online.OnlineEvent;
@@ -11,15 +13,22 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 
 public class LockQuest implements OnlineEvent {
-    private final String id;
+    private String id;
+    private QuestPackage questPackage;
 
-    public LockQuest(String id){this.id = id;}
+    public LockQuest(String id, QuestPackage questPackage){
+        this.id = id;
+        this.questPackage = questPackage;
+    }
 
     @Override
     public void execute(OnlineProfile onlineProfile) throws QuestException {
         Player player = onlineProfile.getPlayer();
         QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
                 .put(id, Statuses.LOCKED);
+        if(PlayerQuestTracker.getPlayerActiveQuest(player).questPackage == questPackage){
+            PlayerQuestTracker.setPlayerActiveQuest(player, null);
+        }
         PlayerDataManager.savePlayerData(player);
     }
 }

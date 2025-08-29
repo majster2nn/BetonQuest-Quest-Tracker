@@ -10,7 +10,7 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
-import org.betonquest.betonquest.id.ConditionID;
+import org.betonquest.betonquest.api.quest.condition.ConditionID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -258,7 +258,7 @@ public class QuestPlaceholder {
             for(String condition : Optional.ofNullable(questPart.getConditions()).orElse("").split(",")){
                 if(!condition.isBlank()){
                     try {
-                        conditions.add(new ConditionID(questPackage, condition));
+                        conditions.add(new ConditionID(BetonQuest.getInstance().getQuestPackageManager(), questPackage, condition));
                     } catch (QuestException e) {
                         throw new RuntimeException(e);
                     }
@@ -268,7 +268,7 @@ public class QuestPlaceholder {
 //                System.out.println("Condition " + condition.toString());
 //                System.out.println("Status " + BetonQuest.getInstance().getQuestTypeAPI().condition(profile, condition));
 //            } --DEBUG
-            if(BetonQuest.getInstance().getQuestTypeAPI().conditions(profile, conditions)){
+            if(BetonQuest.getInstance().getQuestTypeApi().conditions(profile, conditions)){
                 currentlyActiveQuestPart = questPart;
                 break;
             }
