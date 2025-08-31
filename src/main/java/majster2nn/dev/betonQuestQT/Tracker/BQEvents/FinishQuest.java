@@ -26,7 +26,8 @@ public class FinishQuest implements OnlineEvent {
         Player player = onlineProfile.getPlayer();
         QuestPlaceholder.packageStatusesMap.computeIfAbsent(player, x -> new HashMap<>())
                 .put(id, Statuses.FINISHED);
-        if(PlayerQuestTracker.getPlayerActiveQuest(player).questPackage == questPackage){
+        QuestPlaceholder activeQuest = PlayerQuestTracker.getPlayerActiveQuest(player);
+        if(activeQuest != null && activeQuest.questPackage == questPackage){
             PlayerQuestTracker.setPlayerActiveQuest(player, null);
         }
         PlayerDataManager.savePlayerData(player);
