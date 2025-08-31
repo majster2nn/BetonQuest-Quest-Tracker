@@ -2,7 +2,7 @@ package majster2nn.dev.betonQuestQT;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.Commands;
-import majster2nn.dev.betonQuestQT.Tracker.Menus.display.MainMenu;
+import majster2nn.dev.betonQuestQT.tracker.menus.display.MainMenu;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
