@@ -1,7 +1,7 @@
-package majster2nn.dev.betonQuestQT.Tracker.Placeholders;
+package majster2nn.dev.betonQuestQT.tracker.Placeholders;
 
-import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.Tracker.Statuses;
+import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.tracker.Statuses;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

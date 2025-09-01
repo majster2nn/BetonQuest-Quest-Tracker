@@ -1,8 +1,8 @@
-package majster2nn.dev.betonQuestQT.Tracker.PathFinding;
+package majster2nn.dev.betonQuestQT.tracker.PathFinding;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
-import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.Tracker.Statuses;
+import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.tracker.Statuses;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.bukkit.*;
 import org.bukkit.entity.Player;

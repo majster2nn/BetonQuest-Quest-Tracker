@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker.Menus.layouts;
+package majster2nn.dev.betonQuestQT.tracker.Menus.layouts;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import net.kyori.adventure.text.Component;

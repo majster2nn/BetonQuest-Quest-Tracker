@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker.PathFinding;
+package majster2nn.dev.betonQuestQT.tracker.PathFinding;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

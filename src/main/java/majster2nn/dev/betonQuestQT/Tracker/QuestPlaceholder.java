@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker;
+package majster2nn.dev.betonQuestQT.tracker;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.Utils;

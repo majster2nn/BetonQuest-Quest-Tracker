@@ -1,12 +1,12 @@
-package majster2nn.dev.betonQuestQT.Tracker.Menus;
+package majster2nn.dev.betonQuestQT.tracker.Menus;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.MultiPageInventoryGUI;
-import majster2nn.dev.betonQuestQT.Tracker.Menus.buttons.ButtonVisualsStorage;
-import majster2nn.dev.betonQuestQT.Tracker.Menus.display.QuestMenus;
-import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.tracker.Menus.buttons.ButtonVisualsStorage;
+import majster2nn.dev.betonQuestQT.tracker.Menus.display.QuestMenus;
+import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

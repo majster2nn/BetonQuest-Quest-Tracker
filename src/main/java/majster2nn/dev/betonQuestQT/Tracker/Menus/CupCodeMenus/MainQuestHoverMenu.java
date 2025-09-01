@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker.Menus.CupCodeMenus;
+package majster2nn.dev.betonQuestQT.tracker.Menus.CupCodeMenus;
 
 import fr.perrier.cupcodeapi.textdisplay.TextDisplayInstance;
 import fr.perrier.cupcodeapi.textdisplay.builders.TextDisplayBuilder;

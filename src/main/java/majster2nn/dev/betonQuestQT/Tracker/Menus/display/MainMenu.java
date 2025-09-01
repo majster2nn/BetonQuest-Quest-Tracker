@@ -1,10 +1,10 @@
-package majster2nn.dev.betonQuestQT.Tracker.Menus.display;
+package majster2nn.dev.betonQuestQT.tracker.Menus.display;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.InventoryHandlers.InventoryGUI;
-import majster2nn.dev.betonQuestQT.Tracker.Menus.buttons.ButtonVisualsStorage;
-import majster2nn.dev.betonQuestQT.Tracker.Menus.layouts.ButtonLayoutContainer;
+import majster2nn.dev.betonQuestQT.tracker.Menus.buttons.ButtonVisualsStorage;
+import majster2nn.dev.betonQuestQT.tracker.Menus.layouts.ButtonLayoutContainer;
 import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;

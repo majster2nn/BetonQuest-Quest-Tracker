@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker.Menus.buttons;
+package majster2nn.dev.betonQuestQT.tracker.Menus.buttons;
 
 import io.papermc.paper.datacomponent.item.CustomModelData;
 import org.bukkit.Material;

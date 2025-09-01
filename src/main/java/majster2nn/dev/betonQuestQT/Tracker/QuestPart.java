@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker;
+package majster2nn.dev.betonQuestQT.tracker;
 
 public class QuestPart{
     String desc;
