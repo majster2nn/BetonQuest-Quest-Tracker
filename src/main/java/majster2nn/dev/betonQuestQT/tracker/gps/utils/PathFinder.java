@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.tracker.gps;
+package majster2nn.dev.betonQuestQT.tracker.gps.utils;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

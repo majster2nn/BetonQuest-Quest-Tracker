@@ -3,6 +3,7 @@ package majster2nn.dev.betonQuestQT.tracker.gps;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.tracker.Statuses;
+import majster2nn.dev.betonQuestQT.tracker.gps.utils.PathFinder;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
