@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
+package majster2nn.dev.betonQuestQT.tracker.BQEvents;
 
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;

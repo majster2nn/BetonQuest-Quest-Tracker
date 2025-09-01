@@ -1,4 +1,4 @@
-package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
+package majster2nn.dev.betonQuestQT.tracker.BQEvents;
 
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
@@ -18,7 +18,7 @@ public class HideQuestFactory implements PlayerEventFactory {
 
     @Override
     public PlayerEvent parsePlayer(Instruction instruction) throws QuestException {
-        final BetonQuestLogger log = loggerFactory.create(LockQuest.class);
+        final BetonQuestLogger log = loggerFactory.create(HideQuest.class);
 
         return new OnlineEventAdapter(new HideQuest(
                 instruction.getPackage().getQuestPath(), instruction.getPackage()),

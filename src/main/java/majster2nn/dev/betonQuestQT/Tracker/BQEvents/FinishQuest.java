@@ -1,9 +1,9 @@
-package majster2nn.dev.betonQuestQT.Tracker.BQEvents;
+package majster2nn.dev.betonQuestQT.tracker.BQEvents;
 
-import majster2nn.dev.betonQuestQT.Tracker.PathFinding.PlayerQuestTracker;
-import majster2nn.dev.betonQuestQT.Tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.Tracker.Statuses;
 import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
+import majster2nn.dev.betonQuestQT.tracker.PathFinding.PlayerQuestTracker;
+import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.tracker.Statuses;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.QuestException;
