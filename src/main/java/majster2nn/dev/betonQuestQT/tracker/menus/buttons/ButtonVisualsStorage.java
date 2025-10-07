@@ -1,16 +1,18 @@
 package majster2nn.dev.betonQuestQT.tracker.menus.buttons;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.CustomModelData;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +45,15 @@ public class ButtonVisualsStorage {
             List<String> display = List.of(buttonSection.getString("displayMaterial").split(","));
 
             Material material = Material.matchMaterial(display.getFirst().toUpperCase());
-            //CustomModelData modelData -- TODO ADD CUSTOM MODEL DATA SUPPORT
+
+            String customModelData = display.size() > 1 ? display.getLast() : null;
 
             String events = "";
             if (buttonSection.contains("events")) {
                 events += String.join(";", buttonSection.getStringList("events"));
             }
 
-            buttonVisualsMap.put(buttonKey, new ButtonEntry(material, langMap, events));
+            buttonVisualsMap.put(buttonKey, new ButtonEntry(material, langMap, events, customModelData));
         }
     }
 
@@ -60,6 +63,21 @@ public class ButtonVisualsStorage {
         button.setData(DataComponentTypes.CUSTOM_NAME, Component
                 .text(preFormatButton.getDisplayForLang(lang), NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false));
+
+        List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8");
+        ItemMeta meta = button.getItemMeta();
+
+        String customModelData = preFormatButton.getModelData();
+        if (customModelData!=null && !customModelData.isEmpty() && !customModelData.isBlank()) {
+            if (mcVersionsSupported.contains(Bukkit.getMinecraftVersion())) {
+                CustomModelDataComponent component = meta.getCustomModelDataComponent();
+                component.setStrings(List.of(preFormatButton.getModelData()));
+                meta.setCustomModelDataComponent(component);
+            } else {
+                meta.setCustomModelData(Integer.parseInt(preFormatButton.getModelData()));
+            }
+        }
+        button.setItemMeta(meta);
         return button;
     }
 
@@ -71,7 +89,7 @@ public class ButtonVisualsStorage {
         return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>())).getDisplayForLang(lang);
     }
 
-    public static CustomModelData getButtonModelData(String buttonName){
+    public static String getButtonModelData(String buttonName){
         return buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>())).getModelData();
     }
 

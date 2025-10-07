@@ -11,7 +11,11 @@ public abstract class MultiPageInventoryGUI extends InventoryGUI{
     protected final HashMap<Integer, HashMap<Integer, InventoryButton>> pageMap = new HashMap<>();
     public HashMap<Integer, String> pageNameMap = new HashMap<>();
 
-    public MultiPageInventoryGUI(String invName){
+    public MultiPageInventoryGUI(String invName, int amountOfRows) {
+        super(invName, amountOfRows);
+    }
+
+    public MultiPageInventoryGUI(String invName) {
         super(invName);
     }
 

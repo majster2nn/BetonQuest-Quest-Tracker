@@ -19,19 +19,20 @@ import java.util.List;
 
 public class MainMenu extends InventoryGUI {
     public MainMenu(String invName) {
-        super(invName);
+        super(invName, BetonQuestQT.getInstance().configData.getInt("settings.amountOfRowsInMainMenu", 6));
     }
-
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*6, Component.text(invName));
+        return Bukkit.createInventory(null, 9*amountOfRows, Component.text(invName));
     }
 
     @Override
     public void decorate(Player player){
-        ButtonLayoutContainer.getMainMenuLayout().forEach((key, value) -> {
-            addButton(key, buttonSkeleton(value));
-        });
+        ButtonLayoutContainer.getMainMenuLayout().entrySet().stream()
+                .filter((key) -> key.getKey() < amountOfRows * 9)
+                .forEach((entry) -> {
+                        addButton(entry.getKey(), buttonSkeleton(entry.getValue()));
+                });
 
         super.decorate(player);
     }

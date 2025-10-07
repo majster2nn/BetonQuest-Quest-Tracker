@@ -22,26 +22,29 @@ public class QuestMenus extends MultiPageInventoryGUI {
     final String questType;
 
     public QuestMenus(String invName, String questType) {
-        super(invName);
+        super(invName, BetonQuestQT.getInstance().configData.getInt("settings.amountOfRowsInQuestMenus", 6));
         this.questType = questType;
     }
 
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*6, Component.text(invName));
+        return Bukkit.createInventory(null, 9*amountOfRows, Component.text(invName));
     }
 
     @Override
     public void decorate(Player player){
-        ButtonLayoutContainer.getQuestCategoriesMenus().forEach((key, value) -> {
-            if(ButtonVisualsStorage.getButtonEvents(value).contains("prevPage") && pageMap.get(currentPage - 1) == null){
-                addButton(key, currentPage, buttonSkeleton(value, true));
-            }
-            if(ButtonVisualsStorage.getButtonEvents(value).contains("nextPage") && pageMap.get(currentPage + 1) == null){
-                addButton(key, currentPage, buttonSkeleton(value, true));
-            }
-            addButton(key, buttonSkeleton(value, false));
-        });
+        ButtonLayoutContainer.getQuestCategoriesMenus().entrySet().stream()
+                .filter((key) -> key.getKey() < amountOfRows * 9)
+                .forEach((entry) -> {
+                    if (ButtonVisualsStorage.getButtonEvents(entry.getValue()).contains("prevPage") && pageMap.get(currentPage - 1) == null) {
+                        addButton(entry.getKey(), currentPage, buttonSkeleton(entry.getValue(), true));
+                        
+                    }
+                    if (ButtonVisualsStorage.getButtonEvents(entry.getValue()).contains("nextPage") && pageMap.get(currentPage + 1) == null) {
+                        addButton(entry.getKey(), currentPage, buttonSkeleton(entry.getValue(), true));
+                    }
+                    addButton(entry.getKey(), buttonSkeleton(entry.getValue(), false));
+                });
 
         setAllQuestButtons(player);
 
@@ -49,8 +52,8 @@ public class QuestMenus extends MultiPageInventoryGUI {
     }
 
     public void setAllQuestButtons(Player player) {
-        Map<Integer, String> layout = ButtonLayoutContainer.getMainMenuLayout();
-        List<Integer> placeholderSlots = layout.entrySet().stream()
+        List<Integer> placeholderSlots = ButtonLayoutContainer.getMainMenuLayout().entrySet().stream()
+                .filter((key) -> key.getKey() < amountOfRows * 9)
                 .filter(entry -> entry.getValue() != null && entry.getValue().trim().isEmpty())
                 .map(Map.Entry::getKey)
                 .toList();
@@ -85,7 +88,11 @@ public class QuestMenus extends MultiPageInventoryGUI {
 
         // Apply each quest to a slot
         for (int i = 0; i < pageQuests.size(); i++) {
-            setQuestButton(player, placeholderSlots.get(i), currentPage, pageQuests.get(i));
+            try {
+                setQuestButton(player, placeholderSlots.get(i), currentPage, pageQuests.get(i));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

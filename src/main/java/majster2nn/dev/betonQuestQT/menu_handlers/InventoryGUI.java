@@ -14,10 +14,17 @@ import java.util.Map;
 public abstract class InventoryGUI implements InventoryHandler{
     protected Inventory inventory;
     public String name;
+    protected final int amountOfRows;
     protected Map<Integer, InventoryButton> buttonMap = new HashMap<>();
 
+    public InventoryGUI(String invName, int amountOfRows) {
+        this.name = invName;
+        this.amountOfRows = amountOfRows;
+        this.inventory = this.createInventory(name);
+    }
     public InventoryGUI(String invName) {
         this.name = invName;
+        this.amountOfRows = 6;
         this.inventory = this.createInventory(name);
     }
 

@@ -162,3 +162,5 @@ layouts:
 settings:
   questStatusVisuals: true
   defaultFillerButton: "fillerRed"
+  amountOfRowsInQuestMenus: 6
+  amountOfRowsInMainMenu: 6

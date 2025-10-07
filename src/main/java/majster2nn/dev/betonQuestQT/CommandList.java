@@ -1,11 +1,19 @@
 package majster2nn.dev.betonQuestQT;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.Commands;
+import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
+import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.tracker.menus.display.MainMenu;
+import net.kyori.adventure.text.Component;
+import org.betonquest.betonquest.BetonQuest;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -32,12 +40,15 @@ public class CommandList {
                 .requires(sender -> sender.getSender().hasPermission("bqqt.admin"))
                 .then(Commands.literal("reload")
                         .executes(x -> {
+                            BetonQuest.getInstance().reload();
                             plugin = BetonQuestQT.getInstance();
                             try{
                                 plugin.reload();
+                                x.getSource().getSender().sendMessage("Plugin reloaded successfully!");
                                 return 1;
                             }catch (Exception e){
                                 plugin.getLogger().severe(e.getMessage());
+                                x.getSource().getSender().sendMessage("Plugin reload failed! Check the console for errors and contact administrator.");
                                 return 0;
                             }
                         }))
@@ -47,6 +58,33 @@ public class CommandList {
 //                            MainQuestHoverMenu.questDisplay(player, player.getLocation().clone().add(0, 0.7, 0));
 //                            return 1;
 //                        }))
+                .then(Commands.literal("debug")
+                        .executes(x -> {
+                            BetonQuestQT.debug = !BetonQuestQT.debug;
+                            x.getSource().getSender().sendMessage(Component.text("Debug mode set to: " + BetonQuestQT.debug));
+                            return Command.SINGLE_SUCCESS;
+                        }))
+                .then(Commands.literal("purge")
+                        .then(Commands.argument("player", StringArgumentType.word())
+                                .suggests((x, builder) -> {
+                                    List<String> players = new ArrayList<>();
+                                    Bukkit.getOnlinePlayers().forEach(p -> players.add(p.getName()));
+                                    players.stream()
+                                            .filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                                            .forEach(builder::suggest);
+                                    return builder.buildFuture();
+                                })
+                                .executes(ctx -> {
+                                    Player player = Bukkit.getPlayer(ctx.getArgument("player", String.class));
+                                    if(player != null){
+                                        QuestPlaceholder.packageStatusesMap.put(player, new HashMap<>());
+                                        PlayerDataManager.savePlayerData(player);
+                                        ctx.getSource().getSender().sendMessage(Component.text("Successfully purged player " + player.getName() + "!"));
+                                    }else{
+                                        ctx.getSource().getSender().sendMessage("Provided player is either offline or doesn't exist!!!");
+                                    }
+                                    return Command.SINGLE_SUCCESS;
+                                })))
                 .build()
         );
 

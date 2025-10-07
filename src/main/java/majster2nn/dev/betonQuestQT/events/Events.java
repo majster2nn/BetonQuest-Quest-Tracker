@@ -22,8 +22,7 @@ public class Events implements Listener {
     public void onJoin(PlayerJoinEvent e){
         Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(e.getPlayer());
         PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-        if(playerData.getLanguage().isEmpty() ||
-           playerData.getLanguage().get().equals("default")){
+        if(playerData.getLanguage().isPresent() && playerData.getLanguage().get().contains("Optional")){
             playerData.setLanguage(BetonQuest.getInstance().getDefaultLanguage());
             BetonQuest.getInstance().getPlayerDataStorage().put(profile, playerData);
         }

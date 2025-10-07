@@ -3,21 +3,29 @@ package majster2nn.dev.betonQuestQT;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.api.quest.QuestException;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Utils {
+    @NotNull
     public static String getSafeString(ConfigurationSection base, String path, String langKey) {
         ConfigurationSection section = base.getConfigurationSection(path);
-        return (section != null) ? section.getString(langKey) : null;
+        return (section != null) && (section.getString(langKey) != null) ? section.getString(langKey) : "";
     }
 
+    @NotNull
     public static List<String> getSafeStringList(ConfigurationSection base, String path, String langKey){
         ConfigurationSection section = base.getConfigurationSection(path);
-        return (section != null) ? section.getStringList(langKey) : null;
+        return (section != null) ? section.getStringList(langKey) : new ArrayList<>();
     }
 
     public static Component formatYmlString(String str) {
@@ -110,4 +118,72 @@ public class Utils {
 
         return formattedComponent;
     }
+
+
+    public static String formatLineWithVariables(String line, QuestPackage questPackage, Profile profile) {
+        StringBuilder formattedString = new StringBuilder();
+        StringBuilder preFormatVariable = new StringBuilder();
+        boolean caughtVariable = false;
+
+        for (String str : line.split("")) {
+            if (str.equals("%")) {
+                if (!caughtVariable) {
+                    caughtVariable = true;
+                    preFormatVariable.append("%");
+                } else {
+                    caughtVariable = false;
+                    preFormatVariable.append("%");
+                    try {
+                        formattedString.append(
+                                BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatVariable.toString(), profile));
+                    } catch (QuestException e) {
+                        throw new RuntimeException(e);
+                    }
+                    preFormatVariable = new StringBuilder();
+                }
+            } else {
+                if (caughtVariable) {
+                    preFormatVariable.append(str);
+                } else {
+                    formattedString.append(str);
+                }
+            }
+
+        }
+        return formattedString.toString();
+    }
+
+    public static String formatLineWithVariables(String line, Profile profile) {
+        StringBuilder formattedString = new StringBuilder();
+        StringBuilder preFormatVariable = new StringBuilder();
+        boolean caughtVariable = false;
+
+        for (String str : line.split("")) {
+            if (str.equals("%")) {
+                if (!caughtVariable) {
+                    caughtVariable = true;
+
+                } else {
+                    caughtVariable = false;
+
+                    try {
+                        formattedString.append(
+                                BetonQuest.getInstance().getVariableProcessor().getValue(preFormatVariable.toString(), profile));
+                    } catch (QuestException e) {
+                        throw new RuntimeException(e);
+                    }
+                    preFormatVariable = new StringBuilder();
+                }
+            } else {
+                if (caughtVariable) {
+                    preFormatVariable.append(str);
+                } else {
+                    formattedString.append(str);
+                }
+            }
+
+        }
+        return formattedString.toString();
+    }
+
 }

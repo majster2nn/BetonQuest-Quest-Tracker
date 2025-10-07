@@ -1,6 +1,7 @@
 package majster2nn.dev.betonQuestQT.tracker.gps.menus.node;
 
 import majster2nn.dev.betonQuestQT.menu_handlers.MultiPageInventoryGUI;
+import majster2nn.dev.betonQuestQT.menu_handlers.UniversalButtonStorage;
 import majster2nn.dev.betonQuestQT.tracker.gps.utils.LocationNode;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,7 +22,9 @@ public class NodeEditor extends MultiPageInventoryGUI {
 
     @Override
     public void decorate(Player player){
-
+        if(buttonMap.get(currentPage + 1) != null){
+            addButton(40, UniversalButtonStorage.nextPageButton(this));
+        }
         super.decorate(player);
     }
 

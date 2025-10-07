@@ -14,6 +14,7 @@ import majster2nn.dev.betonQuestQT.menu_handlers.GUIManager;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.tracker.menus.buttons.ButtonVisualsStorage;
 import majster2nn.dev.betonQuestQT.tracker.menus.layouts.ButtonLayoutContainer;
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -25,7 +26,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class BetonQuestQT extends JavaPlugin {
@@ -34,6 +34,7 @@ public final class BetonQuestQT extends JavaPlugin {
     public double version = 0.3;
     public GUIManager guiManager;
     private BetonQuestLoggerFactory loggerFactory;
+    public static boolean debug = false;
 
     @Override
     public void onLoad(){
@@ -98,15 +99,12 @@ public final class BetonQuestQT extends JavaPlugin {
             if(!questPackage.getTemplates().contains("trackedQuest")){return;}
             QuestPlaceholder.packageByName.put(id, questPackage);
 
-            String questCategory = Utils.getSafeString(questPackage.getConfig(), "questParameters", "category");
-            if (questCategory == null) {
-                questCategory = "other";
-            }
+            String questCategory = Utils.formatLineWithVariables(Utils.getSafeString(questPackage.getConfig(), "questParameters", "category"), questPackage, null);
 
             QuestPlaceholder.packagesByCategory.put(questPackage, questCategory);
 
             String questTags = Utils.getSafeString(questPackage.getConfig(), "questParameters", "tags");
-            List<String> tags = questTags != null ? List.of(questTags.split(",")): new ArrayList<>();
+            List<String> tags = List.of(questTags.split(","));
             QuestPlaceholder.packagesTags.put(questPackage, tags);
         });
 
@@ -168,10 +166,22 @@ public final class BetonQuestQT extends JavaPlugin {
             lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
         } catch (Exception ignored) {}
 
-        String path = "menuTranslations." + part + "." + lang;
+        String result = Utils.getSafeString(configData.getConfigurationSection("menuTranslations"), part, lang);
 
-        String result = configData.getString(path);
+        if(result.isBlank() || result.isEmpty()) {
+            if (debug) {
+                getComponentLogger().error(Component.text("Error while trying to get translation for " + part + " for language " + lang + " trying to default to " + BetonQuest.getInstance().getDefaultLanguage() + "..."));
+            }
+            result = Utils.getSafeString(configData.getConfigurationSection("menuTranslations"), part, BetonQuest.getInstance().getDefaultLanguage());
+            if(result.isBlank() || result.isEmpty()) {
+                if (debug) {
+                    getComponentLogger().error(Component.text("Couldn't default to " + BetonQuest.getInstance().getDefaultLanguage() + " for " + part + "!!! Contact administrator!!!"));
+                }
+                result = "???";
+            }
+        }
 
-        return (result != null && !result.isEmpty()) ? result : "???";
+        result = Utils.formatLineWithVariables(result, null);
+        return !result.isEmpty() ? result : "???";
     }
 }

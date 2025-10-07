@@ -54,7 +54,6 @@ public class QuestPlaceholder {
             setQuestDisplay();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
         }
 
     }
@@ -67,17 +66,20 @@ public class QuestPlaceholder {
         String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
         ConfigurationSection config = questPackage.getConfig();
 
-        String[] item = Utils.getSafeString(config, "questParameters", "display").split(",");
+        String[] item = Utils.formatLineWithVariables(Utils.getSafeString(config, "questParameters", "display"), questPackage, null).split(",");
+
         Material mat = Material.matchMaterial(item[0] != null ? item[0].toUpperCase() : "");
         if(mat == null){
-            logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no material found for \"" + item[0] + "\", defaulting to DIRT..."));
+            if(BetonQuestQT.debug) {
+                logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no material found for \"" + item[0] + "\", defaulting to DIRT..."));
+            }
             mat = Material.DIRT;
         }
         ItemStack display = new ItemStack(mat);
 
         if(item.length > 1 && !item[1].isEmpty()){
             ItemMeta displayMeta = display.getItemMeta();
-            List<String> mcVersionsSupported = List.of("1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8");
+            List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8");
             if(mcVersionsSupported.contains(Bukkit.getMinecraftVersion())){
                 CustomModelDataComponent component = displayMeta.getCustomModelDataComponent();
                 component.setStrings(List.of(item[1]));
@@ -91,12 +93,16 @@ public class QuestPlaceholder {
 
         String questName = Utils.getSafeString(config, "questParameters.name", lang);
 
-        if(questName == null){
-            logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no name specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to "+ BetonQuest.getInstance().getDefaultLanguage() +"..."));
+        if(questName.isBlank() || questName.isEmpty()){
+            if(BetonQuestQT.debug) {
+                logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no name specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to " + BetonQuest.getInstance().getDefaultLanguage() + "..."));
+            }
             questName = Utils.getSafeString(config, "questParameters.name", BetonQuest.getInstance().getDefaultLanguage());
 
-            if(questName == null) {
-                logger.error(Component.text("Couldn't default to"+ BetonQuest.getInstance().getDefaultLanguage() +" for package: " + questPackage + ", using default debug values..."));
+            if(questName.isBlank() || questName.isEmpty()) {
+                if(BetonQuestQT.debug) {
+                    logger.error(Component.text("Couldn't default to" + BetonQuest.getInstance().getDefaultLanguage() + " for package: " + questPackage + ", using default debug values..."));
+                }
                 questName = "ERROR - contact administration";
             }
         }
@@ -117,18 +123,24 @@ public class QuestPlaceholder {
         List<QuestPart> questParts = new ArrayList<>();
 
         if(config.getConfigurationSection("questParameters.questParts") == null){
-            logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", section questParts doesn't exist or is empty" ));
+            if(BetonQuestQT.debug) {
+                logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", section questParts doesn't exist or is empty"));
+            }
         }else{
             for(String key : config.getConfigurationSection("questParameters.questParts").getKeys(false)){
 
                 String desc = config.getString("questParameters.questParts." + key + ".desc." + lang);
 
                 if(desc == null){
-                    logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no desc specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to "+ BetonQuest.getInstance().getDefaultLanguage() +"..."));
+                    if(BetonQuestQT.debug) {
+                        logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no desc specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to " + BetonQuest.getInstance().getDefaultLanguage() + "..."));
+                    }
                     desc = config.getString("questParameters.questParts." + key + ".desc." + BetonQuest.getInstance().getDefaultLanguage());
 
                     if(desc == null) {
-                        logger.error(Component.text("Couldn't default to "+ BetonQuest.getInstance().getDefaultLanguage() +" for package: " + questPackage + ", using default debug values..."));
+                        if(BetonQuestQT.debug) {
+                            logger.error(Component.text("Couldn't default to " + BetonQuest.getInstance().getDefaultLanguage() + " for package: " + questPackage + ", using default debug values..."));
+                        }
                         desc = "ERROR - contact administration";
                     }
                 }
@@ -152,7 +164,7 @@ public class QuestPlaceholder {
     public void setQuestDisplay() {
         ItemMeta questDisplayMeta = displayMaterial.getItemMeta();
 
-        String formattedName = formatLineWithVariables(name);
+        String formattedName = Utils.formatLineWithVariables(name, questPackage, BetonQuest.getInstance().getProfileProvider().getProfile(player));
 
         questDisplayMeta.displayName(Utils.formatYmlString(formattedName));
 
@@ -171,7 +183,7 @@ public class QuestPlaceholder {
         }
 
         for(String line : lore.split("\n")){
-            loreComponents.add(Utils.formatYmlString(formatLineWithVariables(line)));
+            loreComponents.add(Utils.formatYmlString(Utils.formatLineWithVariables(line, questPackage, BetonQuest.getInstance().getProfileProvider().getProfile(player))));
         }
 
         status = packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
@@ -216,39 +228,6 @@ public class QuestPlaceholder {
 
     public ItemStack getQuestDisplay(){
         return questDisplay;
-    }
-
-    public String formatLineWithVariables(String line) {
-        StringBuilder formattedString = new StringBuilder();
-        StringBuilder preFormatVariable = new StringBuilder();
-        boolean caughtVariable = false;
-
-        for (String str : line.split("")) {
-            if (str.equals("%")) {
-                if (!caughtVariable) {
-                    caughtVariable = true;
-                    preFormatVariable.append("%");
-                } else {
-                    caughtVariable = false;
-                    preFormatVariable.append("%");
-                    try {
-                        formattedString.append(
-                                BetonQuest.getInstance().getVariableProcessor().getValue(questPackage, preFormatVariable.toString(), BetonQuest.getInstance().getProfileProvider().getProfile(player)));
-                    } catch (QuestException e) {
-                        throw new RuntimeException(e);
-                    }
-                    preFormatVariable = new StringBuilder();
-                }
-            } else {
-                if (caughtVariable) {
-                    preFormatVariable.append(str);
-                } else {
-                    formattedString.append(str);
-                }
-            }
-
-        }
-        return formattedString.toString();
     }
 
     public void update(Player player){
