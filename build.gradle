@@ -37,9 +37,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.betonquest:betonquest:3.0.0-SNAPSHOT'
+    compileOnly 'org.betonquest:betonquest:3.0.0-20250910.222318-377' //compileOnly 'org.betonquest:betonquest:3.0.0-SNAPSHOT' -- modern development
+    implementation 'com.zaxxer:HikariCP:7.0.2'
     compileOnly 'io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT'
-    compileOnly 'io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT'
     implementation "net.kyori:adventure-platform-bukkit:4.3.4"
 
     implementation 'fr.perrier:cupcodeapi:1.21.3-v1.0.1'
@@ -73,7 +73,7 @@ tasks.register('fatJar', Jar) {
     }
 
 
-    destinationDirectory.set(file("C:/Pulpit/projekty różne/projekty ważne/serwer/serwer 1.21.5 update/plugins"))
+    destinationDirectory.set(file("C:/Pulpit/projekty różne/projekty ważne/serwer/SAO Debug/plugins"))
     archiveFileName.set("BetonQuestQT.jar")
     with jar
 }

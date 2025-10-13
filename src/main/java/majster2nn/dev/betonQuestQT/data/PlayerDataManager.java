@@ -1,5 +1,7 @@
 package majster2nn.dev.betonQuestQT.data;
 
+import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.data.asyncSaver.Record;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.tracker.Statuses;
 import majster2nn.dev.betonQuestQT.tracker.gps.PlayerQuestTracker;
@@ -12,15 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 public class PlayerDataManager {
-    public static void savePlayerData(Player player){
-        Map<String, List<String>> statusesMap = new HashMap<>(){{
+    public static void savePlayerData(Player player) {
+        Map<String, List<String>> statusesMap = new HashMap<>() {{
             put("activeQuests", new ArrayList<>());
             put("lockedQuests", new ArrayList<>());
             put("finishedQuests", new ArrayList<>());
         }};
 
         BetonQuest.getInstance().getQuestPackageManager().getPackages().forEach((id, questPackage) -> {
-            if(!questPackage.getTemplates().contains("trackedQuest")){return;}
+            if (!questPackage.getTemplates().contains("trackedQuest")) {
+                return;
+            }
 
             Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
             switch (status) {
@@ -30,16 +34,36 @@ public class PlayerDataManager {
             }
         });
 
-        for(String key : statusesMap.keySet()){
-            DataBaseManager.addColumnValueToUserTable(key, String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())), player);
+        BetonQuestQT plugin = BetonQuestQT.getInstance();
+
+        for (String key : statusesMap.keySet()) {
+            plugin.savePlayerDataThread.addRecordToQueue(new Record(
+                            player.getUniqueId().toString(),
+                            String.join(",", statusesMap.getOrDefault(key, new ArrayList<>())),
+                            key
+                    )
+            );
         }
 
-        DataBaseManager.addColumnValueToUserTable("username", player.getName(), player);
+        plugin.savePlayerDataThread.addRecordToQueue(new Record(
+                        player.getUniqueId().toString(),
+                        player.getName(),
+                        "username"
+                )
+        );
 
-        if(PlayerQuestTracker.getPlayerActiveQuest(player) != null) {
-            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(), player);
-        }else{
-            DataBaseManager.addColumnValueToUserTable("currentlyActiveQuest", " ", player);
+        if (PlayerQuestTracker.getPlayerActiveQuest(player) != null) {
+            plugin.savePlayerDataThread.addRecordToQueue(new Record(
+                    player.getUniqueId().toString(),
+                    PlayerQuestTracker.getPlayerActiveQuest(player).questPackage.getQuestPath(),
+                    "currentlyActiveQuest"
+            ));
+        } else {
+            plugin.savePlayerDataThread.addRecordToQueue(new Record(
+                    player.getUniqueId().toString(),
+                    " ",
+                    "currentlyActiveQuest"
+            ));
         }
     }
 }

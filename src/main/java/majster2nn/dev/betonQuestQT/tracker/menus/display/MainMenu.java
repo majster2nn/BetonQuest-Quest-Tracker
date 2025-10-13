@@ -8,6 +8,7 @@ import majster2nn.dev.betonQuestQT.tracker.menus.layouts.ButtonLayoutContainer;
 import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -41,7 +42,8 @@ public class MainMenu extends InventoryGUI {
         return new InventoryButton()
                 .creator(player -> {
                     Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
-                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
                     return ButtonVisualsStorage.getButtonItem(buttonVisualName, lang).clone();
                 })
                 .consumer(event -> {

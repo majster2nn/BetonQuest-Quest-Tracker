@@ -11,6 +11,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.api.quest.condition.ConditionID;
+import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -63,7 +64,8 @@ public class QuestPlaceholder {
         BetonQuest bqInstance = BetonQuest.getInstance();
 
         Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
-        String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+        PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
+        String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
         ConfigurationSection config = questPackage.getConfig();
 
         String[] item = Utils.formatLineWithVariables(Utils.getSafeString(config, "questParameters", "display"), questPackage, null).split(",");
@@ -79,7 +81,7 @@ public class QuestPlaceholder {
 
         if(item.length > 1 && !item[1].isEmpty()){
             ItemMeta displayMeta = display.getItemMeta();
-            List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8");
+            List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8"); //TODO .getVersion().split(".") and then for each splitted number check if its greater then corresponding number of 1.21.3 and if any of the numbers is bigger then use the new branch else use the legacy system
             if(mcVersionsSupported.contains(Bukkit.getMinecraftVersion())){
                 CustomModelDataComponent component = displayMeta.getCustomModelDataComponent();
                 component.setStrings(List.of(item[1]));
