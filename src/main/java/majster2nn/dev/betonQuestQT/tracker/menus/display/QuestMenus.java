@@ -12,6 +12,7 @@ import majster2nn.dev.betonQuestQT.tracker.menus.layouts.ButtonLayoutContainer;
 import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -38,7 +39,6 @@ public class QuestMenus extends MultiPageInventoryGUI {
                 .forEach((entry) -> {
                     if (ButtonVisualsStorage.getButtonEvents(entry.getValue()).contains("prevPage") && pageMap.get(currentPage - 1) == null) {
                         addButton(entry.getKey(), currentPage, buttonSkeleton(entry.getValue(), true));
-                        
                     }
                     if (ButtonVisualsStorage.getButtonEvents(entry.getValue()).contains("nextPage") && pageMap.get(currentPage + 1) == null) {
                         addButton(entry.getKey(), currentPage, buttonSkeleton(entry.getValue(), true));
@@ -52,9 +52,8 @@ public class QuestMenus extends MultiPageInventoryGUI {
     }
 
     public void setAllQuestButtons(Player player) {
-        List<Integer> placeholderSlots = ButtonLayoutContainer.getMainMenuLayout().entrySet().stream()
-                .filter((key) -> key.getKey() < amountOfRows * 9)
-                .filter(entry -> entry.getValue() != null && entry.getValue().trim().isEmpty())
+        List<Integer> placeholderSlots = ButtonLayoutContainer.getQuestCategoriesMenus().entrySet().stream()
+                .filter(entry -> !ButtonVisualsStorage.checkIfButtonExists(entry.getValue()))
                 .map(Map.Entry::getKey)
                 .toList();
 
@@ -98,6 +97,9 @@ public class QuestMenus extends MultiPageInventoryGUI {
 
 
     private void setQuestButton(Player player, int slot, int currentPage, QuestPlaceholder questPlaceholder) {
+        if(BetonQuestQT.debug) {
+            System.out.println("ADDED QUEST BUTTON FOR " + questPlaceholder.name + " to slot " + slot + " on page " + currentPage);
+        }
         this.addButton(slot, currentPage, new InventoryButton()
                 .creator(x -> questPlaceholder.getQuestDisplay())
                 .consumer(e -> {
@@ -118,7 +120,8 @@ public class QuestMenus extends MultiPageInventoryGUI {
         return new InventoryButton()
                 .creator(player -> {
                     Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
-                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
                     return ButtonVisualsStorage.getButtonItem(buttonVisualName, lang).clone();
                 })
                 .consumer(event -> {

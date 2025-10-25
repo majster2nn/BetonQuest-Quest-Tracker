@@ -96,5 +96,9 @@ public class ButtonVisualsStorage {
     public static String getButtonEvents(String buttonName){
         return buttonVisualsMap.get(buttonName) != null ? buttonVisualsMap.get(buttonName).getSpecialParameters() : "";
     }
+
+    public static boolean checkIfButtonExists(String string){
+        return buttonVisualsMap.get(string) != null;
+    }
 }
 

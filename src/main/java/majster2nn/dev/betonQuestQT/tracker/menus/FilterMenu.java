@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -67,7 +68,8 @@ public class FilterMenu extends MultiPageInventoryGUI {
                 .creator(player -> {
                     ItemStack display;
                     Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
-                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
 
                     switch(slot){
                         case 46:{
@@ -102,7 +104,8 @@ public class FilterMenu extends MultiPageInventoryGUI {
         return new InventoryButton()
                 .creator(p -> {
                     Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(p);
-                    String lang = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage().get();
+                    PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
                     return ButtonVisualsStorage.getButtonItem("back", lang);
                 })
                 .consumer(event -> {

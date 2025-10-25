@@ -1,6 +1,6 @@
 package majster2nn.dev.betonQuestQT.events;
 
-import majster2nn.dev.betonQuestQT.data.DataBaseManager;
+import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.tracker.Statuses;
@@ -29,13 +29,14 @@ public class Events implements Listener {
         
         Player player = e.getPlayer();
         Map<String, Statuses> statusesMap = new HashMap<>();
-        for(String key : DataBaseManager.getValueOfCellInUserTable("activeQuests", player).split(",")){
+        BetonQuestQT plugin = BetonQuestQT.getInstance();
+        for(String key : ((String)plugin.dataBaseHandler.getFromDb("userData", "activeQuests", "UUID", player.getUniqueId().toString())).split(",")){
             statusesMap.put(key, Statuses.ACTIVE);
         }
-        for(String key : DataBaseManager.getValueOfCellInUserTable("lockedQuests", player).split(",")){
+        for(String key : ((String)plugin.dataBaseHandler.getFromDb("userData", "lockedQuests", "UUID", player.getUniqueId().toString())).split(",")){
             statusesMap.put(key, Statuses.LOCKED);
         }
-        for(String key : DataBaseManager.getValueOfCellInUserTable("finishedQuests", player).split(",")){
+        for(String key : ((String)plugin.dataBaseHandler.getFromDb("userData", "finishedQuests", "UUID", player.getUniqueId().toString())).split(",")){
             statusesMap.put(key, Statuses.FINISHED);
         }
 
@@ -45,7 +46,7 @@ public class Events implements Listener {
                     .put(questPackage.getQuestPath(), statusesMap.getOrDefault(id, Statuses.HIDDEN));
         });
 
-        String activeQuest = DataBaseManager.getValueOfCellInUserTable("currentlyActiveQuest", player);
+        String activeQuest = ((String)plugin.dataBaseHandler.getFromDb("userData", "currentlyActiveQuest", "UUID", player.getUniqueId().toString()));
         if(!activeQuest.isBlank() && !activeQuest.isEmpty()){
             PlayerQuestTracker.setPlayerActiveQuest(player, QuestPlaceholder.getQuestPlaceholderFromPackage(BetonQuest.getInstance().getQuestPackageManager().getPackages().get(activeQuest), player));
         }
