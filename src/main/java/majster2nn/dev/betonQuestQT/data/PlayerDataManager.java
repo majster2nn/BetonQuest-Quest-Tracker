@@ -26,7 +26,7 @@ public class PlayerDataManager {
                 return;
             }
 
-            Statuses status = QuestPlaceholder.packageStatusesMap.get(player).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
+            Statuses status = QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
             switch (status) {
                 case ACTIVE -> statusesMap.computeIfAbsent("activeQuests", x -> new ArrayList<>()).add(id);
                 case LOCKED -> statusesMap.computeIfAbsent("lockedQuests", x -> new ArrayList<>()).add(id);

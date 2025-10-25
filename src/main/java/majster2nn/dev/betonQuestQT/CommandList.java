@@ -6,8 +6,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.Commands;
 import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
+import majster2nn.dev.betonQuestQT.tracker.Statuses;
 import majster2nn.dev.betonQuestQT.tracker.menus.display.MainMenu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.betonquest.betonquest.BetonQuest;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,16 +17,16 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
 public class CommandList {
-    BetonQuestQT plugin;
+    BetonQuestQT plugin = BetonQuestQT.getInstance();
     public List<LiteralCommandNode> commandBuilders(){
         List<LiteralCommandNode> commands = new ArrayList<>();
 
         commands.add(Commands.literal("questmenu")
                 .executes(ctx -> {
-                    plugin = BetonQuestQT.getInstance();
                     if (!(ctx.getSource().getSender() instanceof Player player)) {
                         ctx.getSource().getSender().sendMessage("You can only use this command in game as a player!");
                         return 0;
@@ -41,7 +43,6 @@ public class CommandList {
                 .then(Commands.literal("reload")
                         .executes(x -> {
                             BetonQuest.getInstance().reload();
-                            plugin = BetonQuestQT.getInstance();
                             try{
                                 plugin.reload();
                                 x.getSource().getSender().sendMessage("Plugin reloaded successfully!");
@@ -63,7 +64,31 @@ public class CommandList {
                             BetonQuestQT.debug = !BetonQuestQT.debug;
                             x.getSource().getSender().sendMessage(Component.text("Debug mode set to: " + BetonQuestQT.debug));
                             return Command.SINGLE_SUCCESS;
-                        }))
+                        })
+                        .then(Commands.literal("questStatus")
+                                .then(Commands.argument("player", StringArgumentType.word())
+                                        .suggests((x, builder) -> {
+                                            List<String> players = new ArrayList<>();
+                                            Bukkit.getOnlinePlayers().forEach(p -> players.add(p.getName()));
+                                            players.stream()
+                                                    .filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                                                    .forEach(builder::suggest);
+                                            return builder.buildFuture();
+                                        })
+                                        .executes(ctx -> {
+                                            Player player = Bukkit.getPlayer(ctx.getArgument("player", String.class));
+                                            if(player != null){
+                                                Map<String, Statuses> statuses = QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>());
+                                                StringBuilder messageRaw = new StringBuilder();
+                                                statuses.entrySet().forEach(k -> {
+                                                    messageRaw.append(k.getKey()).append(" ").append(k.getValue()).append("\n");
+                                                });
+                                                ctx.getSource().getSender().sendMessage(MiniMessage.miniMessage().deserialize(messageRaw.toString()));
+                                            }else{
+                                                ctx.getSource().getSender().sendMessage("Provided player is either offline or doesn't exist!!!");
+                                            }
+                                            return Command.SINGLE_SUCCESS;
+                                        }))))
                 .then(Commands.literal("purge")
                         .then(Commands.argument("player", StringArgumentType.word())
                                 .suggests((x, builder) -> {

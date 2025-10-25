@@ -37,7 +37,9 @@ public class SavePlayerDataThread extends Thread {
             }
             long now = System.currentTimeMillis();
             if(now - previousTime >= milisInterval){
-                System.out.println("Saving data! " + " " + queue.getFirst().value + " " + queue.getFirst().column + " " + queue.getFirst().key);
+                if(BetonQuestQT.debug) {
+                    System.out.println("Saving data! " + " " + queue.getFirst().value + " " + queue.getFirst().column + " " + queue.getFirst().key);
+                }
                 previousTime = now;
 
                 List<Record> snapshot;

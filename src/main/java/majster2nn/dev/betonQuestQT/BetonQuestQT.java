@@ -42,11 +42,6 @@ public final class BetonQuestQT extends JavaPlugin {
     public static boolean debug = false;
     public DataBaseHandler dataBaseHandler;
     public SavePlayerDataThread savePlayerDataThread;
-//
-//    public SavePlayerDataQueue activeQuestQueue = new SavePlayerDataQueue("activeQuests");
-//    public SavePlayerDataQueue lockedQuestQueue = new SavePlayerDataQueue("lockedQuests");
-//    public SavePlayerDataQueue finishedQuestQueue = new SavePlayerDataQueue("finishedQuests");
-//    public SavePlayerDataQueue currentlyActiveQuestQUeue = new SavePlayerDataQueue("currentlyActiveQuest");
 
     @Override
     public void onLoad(){
