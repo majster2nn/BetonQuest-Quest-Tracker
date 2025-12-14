@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.data.asyncSaver.Record;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -34,6 +35,7 @@ public class MySqlManager implements DataBaseHandler{
 
             updateUserDataTableColumns(con, requiredColumns);
         } catch (SQLException e) {
+            Bukkit.getServer().shutdown();
             throw new RuntimeException(e);
         }
     }

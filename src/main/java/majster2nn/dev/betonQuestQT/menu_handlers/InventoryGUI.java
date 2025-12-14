@@ -1,5 +1,7 @@
 package majster2nn.dev.betonQuestQT.menu_handlers;
 
+import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -16,6 +18,8 @@ public abstract class InventoryGUI implements InventoryHandler{
     public String name;
     protected final int amountOfRows;
     protected Map<Integer, InventoryButton> buttonMap = new HashMap<>();
+
+    public static NamespacedKey buttonKey = new NamespacedKey(BetonQuestQT.getInstance(), "InventoryButton");
 
     public InventoryGUI(String invName, int amountOfRows) {
         this.name = invName;

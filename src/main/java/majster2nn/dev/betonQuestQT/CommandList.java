@@ -4,24 +4,17 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.Commands;
-import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
-import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.tracker.Statuses;
 import majster2nn.dev.betonQuestQT.tracker.menus.display.MainMenu;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.betonquest.betonquest.BetonQuest;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
 public class CommandList {
-    BetonQuestQT plugin = BetonQuestQT.getInstance();
     public List<LiteralCommandNode> commandBuilders(){
         List<LiteralCommandNode> commands = new ArrayList<>();
 
@@ -31,7 +24,7 @@ public class CommandList {
                         ctx.getSource().getSender().sendMessage("You can only use this command in game as a player!");
                         return 0;
                     }
-
+                    BetonQuestQT plugin = BetonQuestQT.getInstance();
                     plugin.guiManager.openGui(new MainMenu(plugin.getMenuTranslation("main-menu", player)), player);
                     return 1;
                 })
@@ -43,6 +36,7 @@ public class CommandList {
                 .then(Commands.literal("reload")
                         .executes(x -> {
                             BetonQuest.getInstance().reload();
+                            BetonQuestQT plugin = BetonQuestQT.getInstance();
                             try{
                                 plugin.reload();
                                 x.getSource().getSender().sendMessage("Plugin reloaded successfully!");
@@ -76,17 +70,19 @@ public class CommandList {
                                             return builder.buildFuture();
                                         })
                                         .executes(ctx -> {
-                                            Player player = Bukkit.getPlayer(ctx.getArgument("player", String.class));
-                                            if(player != null){
-                                                Map<String, Statuses> statuses = QuestPlaceholder.packageStatusesMap.getOrDefault(player, new HashMap<>());
-                                                StringBuilder messageRaw = new StringBuilder();
-                                                statuses.entrySet().forEach(k -> {
-                                                    messageRaw.append(k.getKey()).append(" ").append(k.getValue()).append("\n");
-                                                });
-                                                ctx.getSource().getSender().sendMessage(MiniMessage.miniMessage().deserialize(messageRaw.toString()));
-                                            }else{
-                                                ctx.getSource().getSender().sendMessage("Provided player is either offline or doesn't exist!!!");
-                                            }
+//                                            Player player = Bukkit.getPlayer(ctx.getArgument("player", String.class));
+//                                            if(player != null){
+//
+//                                                StringBuilder messageRaw = new StringBuilder();
+//                                                statuses.entrySet().forEach(k -> {
+//                                                    messageRaw.append(k.getKey()).append(" ").append(k.getValue()).append("\n");
+//                                                });
+//                                                ctx.getSource().getSender().sendMessage(MiniMessage.miniMessage().deserialize(messageRaw.toString()));
+//                                            }else{
+//                                                ctx.getSource().getSender().sendMessage("Provided player is either offline or doesn't exist!!!");
+//                                            }
+                                            ctx.getSource().getSender().sendMessage("Currently this command is disabled. This will be fixed soon");
+                                            //TODO readd the statuses command
                                             return Command.SINGLE_SUCCESS;
                                         }))))
                 .then(Commands.literal("purge")
@@ -102,9 +98,7 @@ public class CommandList {
                                 .executes(ctx -> {
                                     Player player = Bukkit.getPlayer(ctx.getArgument("player", String.class));
                                     if(player != null){
-                                        QuestPlaceholder.packageStatusesMap.put(player, new HashMap<>());
-                                        PlayerDataManager.savePlayerData(player);
-                                        ctx.getSource().getSender().sendMessage(Component.text("Successfully purged player " + player.getName() + "!"));
+                                        ctx.getSource().getSender().sendMessage(Component.text("Successfully purged player " + player.getName() + "! (this command currently has co effect and will most likely be removed)"));
                                     }else{
                                         ctx.getSource().getSender().sendMessage("Provided player is either offline or doesn't exist!!!");
                                     }

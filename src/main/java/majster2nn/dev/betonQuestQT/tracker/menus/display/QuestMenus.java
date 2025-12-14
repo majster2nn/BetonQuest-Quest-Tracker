@@ -1,11 +1,10 @@
 package majster2nn.dev.betonQuestQT.tracker.menus.display;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.Utils;
 import majster2nn.dev.betonQuestQT.menu_handlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.menu_handlers.MultiPageInventoryGUI;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.tracker.Statuses;
-import majster2nn.dev.betonQuestQT.tracker.gps.PlayerQuestTracker;
 import majster2nn.dev.betonQuestQT.tracker.menus.FilterMenu;
 import majster2nn.dev.betonQuestQT.tracker.menus.buttons.ButtonVisualsStorage;
 import majster2nn.dev.betonQuestQT.tracker.menus.layouts.ButtonLayoutContainer;
@@ -20,7 +19,10 @@ import org.bukkit.inventory.Inventory;
 import java.util.*;
 
 public class QuestMenus extends MultiPageInventoryGUI {
-    final String questType;
+    String questType;
+    List<Integer> placeholderSlots = new ArrayList<>();
+    List<QuestPlaceholder> filteredQuests = new ArrayList<>();
+    int amountOfPages = 1;
 
     public QuestMenus(String invName, String questType) {
         super(invName, BetonQuestQT.getInstance().configData.getInt("settings.amountOfRowsInQuestMenus", 6));
@@ -36,42 +38,33 @@ public class QuestMenus extends MultiPageInventoryGUI {
     public void decorate(Player player){
         ButtonLayoutContainer.getQuestCategoriesMenus().entrySet().stream()
                 .filter((key) -> key.getKey() < amountOfRows * 9)
-                .forEach((entry) -> {
-                    if (ButtonVisualsStorage.getButtonEvents(entry.getValue()).contains("prevPage") && pageMap.get(currentPage - 1) == null) {
-                        addButton(entry.getKey(), currentPage, buttonSkeleton(entry.getValue(), true));
-                    }
-                    if (ButtonVisualsStorage.getButtonEvents(entry.getValue()).contains("nextPage") && pageMap.get(currentPage + 1) == null) {
-                        addButton(entry.getKey(), currentPage, buttonSkeleton(entry.getValue(), true));
-                    }
-                    addButton(entry.getKey(), buttonSkeleton(entry.getValue(), false));
-                });
+                .forEach((entry) -> addButton(entry.getKey(), -1, buttonSkeleton(entry.getValue())));
 
         setAllQuestButtons(player);
-
         super.decorate(player);
     }
 
     public void setAllQuestButtons(Player player) {
-        List<Integer> placeholderSlots = ButtonLayoutContainer.getQuestCategoriesMenus().entrySet().stream()
+        placeholderSlots = ButtonLayoutContainer.getQuestCategoriesMenus().entrySet().stream()
                 .filter(entry -> !ButtonVisualsStorage.checkIfButtonExists(entry.getValue()))
                 .map(Map.Entry::getKey)
                 .toList();
 
-        List<QuestPlaceholder> filteredQuests = QuestPlaceholder.packageByName.values().stream()
+        filteredQuests = QuestPlaceholder.packageByName.values().stream()
                 .map(questPackage -> QuestPlaceholder.getQuestPlaceholderFromPackage(questPackage, player))
                 .filter(q -> {
                     String category = QuestPlaceholder.packagesByCategory.getOrDefault(q.questPackage, "none");
-                    Statuses status = QuestPlaceholder.packageStatusesMap
-                            .getOrDefault(player, Map.of())
-                            .getOrDefault(q.questPackage.getQuestPath(), Statuses.HIDDEN);
 
                     if ("finished".equalsIgnoreCase(questType)) {
-                        return status == Statuses.FINISHED;
+                        return Utils.checkBqConditions(q.questPackage, "questParameters.statuses.finished", BetonQuest.getInstance().getProfileProvider().getProfile(player.getUniqueId()));
                     }
 
-                    return questType.equalsIgnoreCase(category)
-                            && status != Statuses.HIDDEN
-                            && status != Statuses.FINISHED;
+                    return questType.equalsIgnoreCase(category) &&
+                            (Utils.checkBqConditions(
+                                    q.questPackage,
+                                    "questParameters.statuses.active",
+                                    BetonQuest.getInstance().getProfileProvider().getProfile(player.getUniqueId()))
+                            );
                 })
                 .filter(q -> {
                     List<String> tags = QuestPlaceholder.packagesTags.getOrDefault(q.questPackage, List.of());
@@ -80,7 +73,9 @@ public class QuestMenus extends MultiPageInventoryGUI {
                 .toList();
 
 
+
         int perPage = placeholderSlots.size();
+        amountOfPages = (int) Math.ceil(1.0*filteredQuests.size()/perPage);
         int start = (currentPage - 1) * perPage;
         int end = Math.min(start + perPage, filteredQuests.size());
         List<QuestPlaceholder> pageQuests = filteredQuests.subList(start, end);
@@ -103,20 +98,16 @@ public class QuestMenus extends MultiPageInventoryGUI {
         this.addButton(slot, currentPage, new InventoryButton()
                 .creator(x -> questPlaceholder.getQuestDisplay())
                 .consumer(e -> {
-                    Statuses status = QuestPlaceholder.packageStatusesMap
-                            .getOrDefault(player, Map.of())
-                            .getOrDefault(questPlaceholder.questPackage.getQuestPath(), Statuses.HIDDEN);
 
-                    if(status == Statuses.ACTIVE) {
-                        PlayerQuestTracker.setPlayerActiveQuest(player, questPlaceholder);
-                        PlayerQuestTracker.activateQuestTracking(player);
-                    }
+//                        PlayerQuestTracker.setPlayerActiveQuest(player, questPlaceholder);
+//                        PlayerQuestTracker.activateQuestTracking(player);
+
                     e.setCancelled(true);
                 }));
     }
 
 
-    private InventoryButton buttonSkeleton(String buttonVisualName, boolean ignoreEvent){
+    private InventoryButton buttonSkeleton(String buttonVisualName) {
         return new InventoryButton()
                 .creator(player -> {
                     Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
@@ -125,37 +116,39 @@ public class QuestMenus extends MultiPageInventoryGUI {
                     return ButtonVisualsStorage.getButtonItem(buttonVisualName, lang).clone();
                 })
                 .consumer(event -> {
-                    if(!ignoreEvent && ButtonVisualsStorage.getButtonEvents(buttonVisualName) != null){
+                    if (ButtonVisualsStorage.getButtonEvents(buttonVisualName) != null) {
                         HashMap<String, String> eventMap = new HashMap<>();
-                        for(String eventString : ButtonVisualsStorage.getButtonEvents(buttonVisualName).split(";")){
+                        for (String eventString : ButtonVisualsStorage.getButtonEvents(buttonVisualName).split(";")) {
                             List<String> eventRaw = new ArrayList<>(Arrays.asList(eventString.split(":", 2)));
                             eventRaw.add(" ");
                             eventMap.put(eventRaw.getFirst(), eventRaw.get(1));
                         }
 
-                        if(eventMap.containsKey("return")){
+                        if (eventMap.containsKey("return")) {
                             BetonQuestQT.getInstance().guiManager.openGui(
                                     new MainMenu(BetonQuestQT.getInstance().getMenuTranslation("main-menu", (Player) event.getWhoClicked())),
                                     (Player) event.getWhoClicked()
                             );
                         }
 
-                        if(eventMap.containsKey("filter")){
+                        if (eventMap.containsKey("filter")) {
                             BetonQuestQT.getInstance().guiManager.openGui(
                                     new FilterMenu(BetonQuestQT.getInstance().getMenuTranslation("header-filters", (Player) event.getWhoClicked()), questType),
                                     (Player) event.getWhoClicked()
                             );
                         }
 
-                        if(eventMap.containsKey("prevPage")){
-                            if(pageMap.get(currentPage - 1) != null) {
+                        if (eventMap.containsKey("prevPage")) {
+                            if (currentPage - 1 > 0) {
                                 currentPage--;
+                                decorate((Player) event.getWhoClicked());
                             }
                         }
 
-                        if(eventMap.containsKey("nextPage")){
-                            if(pageMap.get(currentPage + 1) != null){
+                        if (eventMap.containsKey("nextPage")) {
+                            if (currentPage + 1 <= amountOfPages) {
                                 currentPage++;
+                                decorate((Player) event.getWhoClicked());
                             }
                         }
                     }

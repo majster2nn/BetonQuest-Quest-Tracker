@@ -3,8 +3,6 @@ package majster2nn.dev.betonQuestQT.tracker;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.Utils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
@@ -28,11 +26,9 @@ public class QuestPlaceholder {
     public String name;
     public List<QuestPart> questParts;
     public QuestPart currentlyActiveQuestPart;
-    public Statuses status = Statuses.LOCKED;
     public Player player;
     public final QuestPackage questPackage;
 
-    public static Map<Player, Map<String, Statuses>> packageStatusesMap = new HashMap<>();
     public static Map<String, QuestPackage> packageByName = new HashMap<>();
     public static Map<QuestPackage, String> packagesByCategory = new HashMap<>();
     public static Map<QuestPackage, List<String>> packagesTags = new HashMap<>();
@@ -188,39 +184,37 @@ public class QuestPlaceholder {
             loreComponents.add(Utils.formatYmlString(Utils.formatLineWithVariables(line, questPackage, BetonQuest.getInstance().getProfileProvider().getProfile(player))));
         }
 
-        status = packageStatusesMap.getOrDefault(player, new HashMap<>()).getOrDefault(questPackage.getQuestPath(), Statuses.HIDDEN);
-
         ConfigurationSection settings = BetonQuestQT.getInstance().getConfig().getConfigurationSection("settings");
-        if(settings != null && settings.contains("questStatusVisuals") && settings.getBoolean("questStatusVisuals")) {
-            switch (status) {
-                case ACTIVE: {
-                    loreComponents.add(Component
-                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_active", player))
-                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                            .color(NamedTextColor.GREEN));
-                    break;
-                }
-                case FINISHED: {
-//                loreComponents.clear(); TODO add an option to specify if the lore should be hidden after finished or nah
-                    loreComponents.add(Component
-                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_finished", player))
-                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                            .color(NamedTextColor.GRAY));
-                    break;
-                }
-                case LOCKED: {
-//                loreComponents.clear(); TODO add an option to specify if the lore should be hidden if locked or nah
-                    loreComponents.add(Component
-                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_locked", player))
-                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                            .color(NamedTextColor.RED));
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-        }
+//        if(settings != null && settings.contains("questStatusVisuals") && settings.getBoolean("questStatusVisuals")) {
+//            switch (status) {
+//                case ACTIVE: {
+//                    loreComponents.add(Component
+//                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_active", player))
+//                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+//                            .color(NamedTextColor.GREEN));
+//                    break;
+//                }
+//                case FINISHED: {
+////                loreComponents.clear();
+//                    loreComponents.add(Component
+//                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_finished", player))
+//                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+//                            .color(NamedTextColor.GRAY));
+//                    break;
+//                }
+//                case LOCKED: {
+////                loreComponents.clear();
+//                    loreComponents.add(Component
+//                            .text(BetonQuestQT.getInstance().getMenuTranslation("quest_locked", player))
+//                            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+//                            .color(NamedTextColor.RED));
+//                    break;
+//                }
+//                default: {
+//                    break;
+//                }
+//            }
+//        }
 
         questDisplayMeta.lore(loreComponents);
 

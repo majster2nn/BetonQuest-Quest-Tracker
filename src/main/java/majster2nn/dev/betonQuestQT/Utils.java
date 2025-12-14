@@ -7,13 +7,11 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
+import org.betonquest.betonquest.api.quest.condition.ConditionID;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Utils {
     @NotNull
@@ -34,7 +32,7 @@ public class Utils {
         Component formattedComponent = Component.text("");
         formattedComponent = formattedComponent.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
 
-        String[] words = str.split(" ");
+        List<String> words = List.of(str.split(" "));
         TextColor currentColor = null;
         Set<TextDecoration> decorations = new HashSet<>();
 
@@ -101,6 +99,9 @@ public class Utils {
 
             if (!currentText.isEmpty()) {
                 Component tempComponent = Component.text(currentText.toString());
+                if(words.indexOf(word) != words.size() - 1){
+                    tempComponent = tempComponent.append(Component.text(" "));
+                }
                 tempComponent = tempComponent.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
                 if (currentColor != null) {
                     tempComponent = tempComponent.color(currentColor);
@@ -111,9 +112,8 @@ public class Utils {
                     tempComponent = tempComponent.decorate(decoration);
                 }
                 formattedComponent = formattedComponent.append(tempComponent);
-            }
 
-            formattedComponent = formattedComponent.append(Component.text(" "));
+            }
         }
 
         return formattedComponent;
@@ -186,4 +186,21 @@ public class Utils {
         return formattedString.toString();
     }
 
+    public static boolean checkBqConditions(QuestPackage questPackage, String path, Profile profile){
+        List<ConditionID> conditions = new ArrayList<>();
+        for(String condition : Optional.ofNullable(questPackage.getConfig().getString(path)).orElse("").split(",")){
+            if(!condition.isBlank()){
+                try {
+                    conditions.add(new ConditionID(BetonQuest.getInstance().getQuestPackageManager(), questPackage, condition));
+                } catch (QuestException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+//            for(ConditionID condition : conditions){
+//                System.out.println("Condition " + condition.toString());
+//                System.out.println("Status " + BetonQuest.getInstance().getQuestTypeApi().condition(profile, condition));
+//            } //--DEBUG
+        return BetonQuest.getInstance().getQuestTypeApi().conditions(profile, conditions);
+    }
 }

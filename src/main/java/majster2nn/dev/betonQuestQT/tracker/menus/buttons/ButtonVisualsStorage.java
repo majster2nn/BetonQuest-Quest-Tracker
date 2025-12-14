@@ -2,6 +2,7 @@ package majster2nn.dev.betonQuestQT.tracker.menus.buttons;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.menu_handlers.InventoryGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -13,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +66,7 @@ public class ButtonVisualsStorage {
                 .text(preFormatButton.getDisplayForLang(lang), NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false));
 
-        List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8");
+        List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11");
         ItemMeta meta = button.getItemMeta();
 
         String customModelData = preFormatButton.getModelData();
@@ -77,7 +79,11 @@ public class ButtonVisualsStorage {
                 meta.setCustomModelData(Integer.parseInt(preFormatButton.getModelData()));
             }
         }
+
         button.setItemMeta(meta);
+        button.editPersistentDataContainer(pdc -> {
+            pdc.set(InventoryGUI.buttonKey, PersistentDataType.INTEGER, 1);
+        });
         return button;
     }
 

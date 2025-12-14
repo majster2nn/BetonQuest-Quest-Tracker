@@ -1,16 +1,6 @@
 package majster2nn.dev.betonQuestQT;
 
-import fr.perrier.cupcodeapi.CupCodeAPI;
-import majster2nn.dev.betonQuestQT.data.DataBaseHandler;
-import majster2nn.dev.betonQuestQT.data.MySqlManager;
-import majster2nn.dev.betonQuestQT.data.PlayerDataManager;
-import majster2nn.dev.betonQuestQT.data.SqliteManager;
-import majster2nn.dev.betonQuestQT.data.asyncSaver.SavePlayerDataThread;
 import majster2nn.dev.betonQuestQT.events.Events;
-import majster2nn.dev.betonQuestQT.hooks.betonquest.events.ActiveQuestFactory;
-import majster2nn.dev.betonQuestQT.hooks.betonquest.events.FinishQuestFactory;
-import majster2nn.dev.betonQuestQT.hooks.betonquest.events.HideQuestFactory;
-import majster2nn.dev.betonQuestQT.hooks.betonquest.events.LockQuestFactory;
 import majster2nn.dev.betonQuestQT.hooks.papi.QuestStatus;
 import majster2nn.dev.betonQuestQT.menu_handlers.GUIListener;
 import majster2nn.dev.betonQuestQT.menu_handlers.GUIManager;
@@ -31,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 public final class BetonQuestQT extends JavaPlugin {
     public File config;
@@ -40,8 +29,6 @@ public final class BetonQuestQT extends JavaPlugin {
     public GUIManager guiManager;
     private BetonQuestLoggerFactory loggerFactory;
     public static boolean debug = false;
-    public DataBaseHandler dataBaseHandler;
-    public SavePlayerDataThread savePlayerDataThread;
 
     @Override
     public void onLoad(){
@@ -54,39 +41,11 @@ public final class BetonQuestQT extends JavaPlugin {
 
         configData = YamlConfiguration.loadConfiguration(config);
 
-        if(configData.contains("databaseType")){
-            String dataBaseType = Objects.requireNonNullElse(configData.getString("databaseType"), "");
-
-            switch(dataBaseType.toLowerCase()){
-                case "mysql" -> {
-                    dataBaseHandler = new MySqlManager();
-                }
-                case "mariadb" -> {
-                    getComponentLogger().info(Component.text("MariaDB is not yet supported!!! Switching to default SQLite database..."));
-                    dataBaseHandler = new SqliteManager();
-                }
-                default -> {
-                    dataBaseHandler = new SqliteManager();
-                }
-            }
-        }else{
-            dataBaseHandler = new SqliteManager();
-        }
-
-        dataBaseHandler.init();
-        savePlayerDataThread = new SavePlayerDataThread();
-        savePlayerDataThread.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{savePlayerDataThread.end(dataBaseHandler);}));
-
         //HOOKS
         if (Bukkit.getPluginManager().getPlugin("BetonQuest") == null){
             getLogger().warning("BetonQuest plugin not found. This plugin requires BetonQuest");
             getServer().getPluginManager().disablePlugin(this);
         }
-
-        CupCodeAPI.enable(this);
-
 
         this.guiManager = new GUIManager();
 
@@ -107,13 +66,7 @@ public final class BetonQuestQT extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for(Player player : Bukkit.getOnlinePlayers()){
-            PlayerDataManager.savePlayerData(player);
-        }
 
-        CupCodeAPI.disable();
-
-        savePlayerDataThread.end(dataBaseHandler);
     }
 
     public void reload(){
@@ -132,7 +85,7 @@ public final class BetonQuestQT extends JavaPlugin {
         QuestPlaceholder.tags.addAll(getConfig().getStringList("filters"));
 
         BetonQuest.getInstance().getQuestPackageManager().getPackages().forEach((id, questPackage) -> {
-            if(!questPackage.getTemplates().contains("trackedQuest")){return;}
+            if(!questPackage.getConfig().contains("questParameters")){return;}
             QuestPlaceholder.packageByName.put(id, questPackage);
 
             String questCategory = Utils.formatLineWithVariables(Utils.getSafeString(questPackage.getConfig(), "questParameters", "category"), questPackage, null);
@@ -147,10 +100,7 @@ public final class BetonQuestQT extends JavaPlugin {
     }
 
     public void registerEvents(BetonQuest betonQuest){
-        betonQuest.getQuestRegistries().event().register("lockQuest", new LockQuestFactory(loggerFactory));
-        betonQuest.getQuestRegistries().event().register("activeQuest", new ActiveQuestFactory(loggerFactory));
-        betonQuest.getQuestRegistries().event().register("finishQuest", new FinishQuestFactory(loggerFactory));
-        betonQuest.getQuestRegistries().event().register("hideQuest", new HideQuestFactory(loggerFactory));
+
     }
 
     public static BetonQuestQT getInstance(){
@@ -183,17 +133,6 @@ public final class BetonQuestQT extends JavaPlugin {
             }catch (Exception err){
                 err.printStackTrace();
             }
-        }
-
-        File dbConfig = new File(this.getDataFolder(), "dbConfig.properties");
-
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdirs();
-        }
-
-        if (!dbConfig.exists()) {
-            saveResource("dbConfig.properties", false);
-            getLogger().info("Created default dbConfig.properties");
         }
     }
     public void updateConfig(){

@@ -2,7 +2,6 @@ package majster2nn.dev.betonQuestQT.tracker.gps;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
-import majster2nn.dev.betonQuestQT.tracker.Statuses;
 import majster2nn.dev.betonQuestQT.tracker.gps.utils.PathFinder;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.bukkit.*;
@@ -15,8 +14,8 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class PlayerQuestTracker {
-    private static Map<Player, QuestPlaceholder> playerActiveQuest = new HashMap<>();
-    private static Map<Player, BukkitRunnable> runningTasks = new HashMap<>();
+    private static final Map<Player, QuestPlaceholder> playerActiveQuest = new HashMap<>();
+    private static final Map<Player, BukkitRunnable> runningTasks = new HashMap<>();
     private static final long cooldown = 20;
 
     public static QuestPlaceholder getPlayerActiveQuest(Player player) {
@@ -61,7 +60,7 @@ public class PlayerQuestTracker {
                 @Override
                 public void run() {
                     if(getPlayerActiveQuest(player) != null){
-                        if(getPlayerActiveQuest(player).status != Statuses.ACTIVE){
+                        if(getPlayerActiveQuest(player) != null){
                             setPlayerActiveQuest(player, null);
                         }else {
                             getPlayerActiveQuest(player).update(player);

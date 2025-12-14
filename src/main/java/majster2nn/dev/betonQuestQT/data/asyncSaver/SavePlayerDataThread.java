@@ -1,6 +1,5 @@
 package majster2nn.dev.betonQuestQT.data.asyncSaver;
 
-import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.data.DataBaseHandler;
 
 import java.util.ArrayList;
@@ -20,42 +19,41 @@ public class SavePlayerDataThread extends Thread {
 
     @Override
     public void run() {
-        while(true){
-            while(queue.isEmpty()){
-                if(!running){
-                    BetonQuestQT.getInstance().dataBaseHandler.close();
-                    return;
-                }
-
-                synchronized (this){
-                    try{
-                        wait();
-                    } catch (InterruptedException e) {
-                        BetonQuestQT.getInstance().getLogger().warning("Something interrupted data saver.");
-                    }
-                }
-            }
-            long now = System.currentTimeMillis();
-            if(now - previousTime >= milisInterval){
-                if(BetonQuestQT.debug) {
-                    System.out.println("Saving data! " + " " + queue.getFirst().value + " " + queue.getFirst().column + " " + queue.getFirst().key);
-                }
-                previousTime = now;
-
-                List<Record> snapshot;
-                synchronized (this) {
-                    snapshot = new ArrayList<>(queue);
-                    queue.clear();
-                }
-
-                if(running) {
-                    BetonQuestQT.getInstance().dataBaseHandler.saveToDb("userData", snapshot);
-                }else{
-                    privateHandler.saveToDb("userData", snapshot);
-                }
-            }
-        }
-
+//        while(true){
+//            while(queue.isEmpty()){
+//                if(!running){
+//                    BetonQuestQT.getInstance().dataBaseHandler.close();
+//                    return;
+//                }
+//
+//                synchronized (this){
+//                    try{
+//                        wait();
+//                    } catch (InterruptedException e) {
+//                        BetonQuestQT.getInstance().getLogger().warning("Something interrupted data saver.");
+//                    }
+//                }
+//            }
+//            long now = System.currentTimeMillis();
+//            if(now - previousTime >= milisInterval){
+//                if(BetonQuestQT.debug) {
+//                    System.out.println("Saving data! " + " " + queue.getFirst().value + " " + queue.getFirst().column + " " + queue.getFirst().key);
+//                }
+//                previousTime = now;
+//
+//                List<Record> snapshot;
+//                synchronized (this) {
+//                    snapshot = new ArrayList<>(queue);
+//                    queue.clear();
+//                }
+//
+//                if(running) {
+//                    BetonQuestQT.getInstance().dataBaseHandler.saveToDb("userData", snapshot);
+//                }else{
+//                    privateHandler.saveToDb("userData", snapshot);
+//                }
+//            }
+//        }
     }
 
     public void addRecordToQueue(Record record){

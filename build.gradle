@@ -37,10 +37,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.betonquest:betonquest:3.0.0-20250910.222318-377'
-//    compileOnly 'org.betonquest:betonquest:3.0.0-SNAPSHOT' //-- modern development
+//    compileOnly 'org.betonquest:betonquest:3.0.0-20250910.222318-377'
+    compileOnly 'org.betonquest:betonquest:3.0.0-SNAPSHOT' //-- modern development
     implementation 'com.zaxxer:HikariCP:7.0.2'
-    compileOnly 'io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     implementation "net.kyori:adventure-platform-bukkit:4.3.4"
 
     implementation 'fr.perrier:cupcodeapi:1.21.3-v1.0.1'
