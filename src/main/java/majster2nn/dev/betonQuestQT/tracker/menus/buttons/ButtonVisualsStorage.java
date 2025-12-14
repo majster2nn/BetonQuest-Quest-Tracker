@@ -62,8 +62,9 @@ public class ButtonVisualsStorage {
     public static ItemStack getButtonItem(String buttonName, String lang){
         ButtonEntry preFormatButton = buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>()));
         ItemStack button = new ItemStack(preFormatButton.getMaterial());
+        String correctedLang = lang.equals("default") ? BetonQuest.getInstance().getDefaultLanguage() : lang;
         button.setData(DataComponentTypes.CUSTOM_NAME, Component
-                .text(preFormatButton.getDisplayForLang(lang), NamedTextColor.WHITE)
+                .text(preFormatButton.getDisplayForLang(correctedLang), NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false));
 
         List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11");

@@ -150,7 +150,7 @@ public final class BetonQuestQT extends JavaPlugin {
         try {
             Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
             PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-            lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
+            lang = playerData.getLanguage().isEmpty() || playerData.getLanguage().get().contains("default") ? BetonQuest.getInstance().getDefaultLanguage() : playerData.getLanguage().get();
         } catch (Exception ignored) {}
 
         String result = Utils.getSafeString(configData.getConfigurationSection("menuTranslations"), part, lang);
