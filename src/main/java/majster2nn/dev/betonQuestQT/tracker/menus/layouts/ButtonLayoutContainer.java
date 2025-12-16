@@ -35,8 +35,8 @@ public class ButtonLayoutContainer {
         }
     }
 
-    public static void loadQuestCategoriesMenuslayout(){
-        System.out.println("loaded quest menu layout");
+    public static void loadQuestCategoriesMenusLayout(){
+
         questCategoriesMenus.clear();
         ConfigurationSection menuLayout = BetonQuestQT.getInstance().getConfig().getConfigurationSection("layouts.questMenus");
         if(menuLayout == null){

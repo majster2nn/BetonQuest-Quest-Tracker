@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MainMenu extends InventoryGUI {
     public MainMenu(String invName) {
-        super(invName, BetonQuestQT.getInstance().configData.getInt("settings.amountOfRowsInMainMenu", 6));
+        super(invName, BetonQuestQT.getInstance().getConfig().getInt("settings.amountOfRowsInMainMenu", 6));
     }
     @Override
     protected Inventory createInventory(String invName) {

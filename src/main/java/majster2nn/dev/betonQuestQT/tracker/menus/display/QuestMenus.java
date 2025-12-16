@@ -25,7 +25,7 @@ public class QuestMenus extends MultiPageInventoryGUI {
     int amountOfPages = 1;
 
     public QuestMenus(String invName, String questType) {
-        super(invName, BetonQuestQT.getInstance().configData.getInt("settings.amountOfRowsInQuestMenus", 6));
+        super(invName, BetonQuestQT.getInstance().getConfig().getInt("settings.amountOfRowsInQuestMenus", 6));
         this.questType = questType;
     }
 
