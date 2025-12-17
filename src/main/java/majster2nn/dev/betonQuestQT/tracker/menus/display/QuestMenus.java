@@ -31,7 +31,7 @@ public class QuestMenus extends MultiPageInventoryGUI {
 
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*amountOfRows, Component.text(invName));
+        return Bukkit.createInventory(null, 9*amountOfRows, Utils.formatYmlString(invName));
     }
 
     @Override

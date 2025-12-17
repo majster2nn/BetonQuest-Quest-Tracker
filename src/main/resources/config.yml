@@ -103,7 +103,7 @@ buttonVisuals:
       pl-PL: "Inne"
     displayMaterial: book
     events:
-      - "openMenu:quest"
+      - "openMenu:other"
   finishedQuest:
     text:
       en-US: "Finished"

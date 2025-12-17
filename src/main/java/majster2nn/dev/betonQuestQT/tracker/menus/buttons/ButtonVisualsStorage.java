@@ -2,6 +2,7 @@ package majster2nn.dev.betonQuestQT.tracker.menus.buttons;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.Utils;
 import majster2nn.dev.betonQuestQT.menu_handlers.InventoryGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -63,9 +64,7 @@ public class ButtonVisualsStorage {
         ButtonEntry preFormatButton = buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>()));
         ItemStack button = new ItemStack(preFormatButton.getMaterial());
         String correctedLang = lang.equals("default") ? BetonQuest.getInstance().getDefaultLanguage() : lang;
-        button.setData(DataComponentTypes.CUSTOM_NAME, Component
-                .text(preFormatButton.getDisplayForLang(correctedLang), NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false));
+        button.setData(DataComponentTypes.CUSTOM_NAME, Utils.formatYmlString(preFormatButton.getDisplayForLang(correctedLang)));
 
         List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11");
         ItemMeta meta = button.getItemMeta();

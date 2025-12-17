@@ -1,6 +1,7 @@
 package majster2nn.dev.betonQuestQT.tracker.menus.display;
 
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.Utils;
 import majster2nn.dev.betonQuestQT.menu_handlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.menu_handlers.InventoryGUI;
 import majster2nn.dev.betonQuestQT.tracker.menus.buttons.ButtonVisualsStorage;
@@ -24,7 +25,7 @@ public class MainMenu extends InventoryGUI {
     }
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*amountOfRows, Component.text(invName));
+        return Bukkit.createInventory(null, 9*amountOfRows, Utils.formatYmlString(invName));
     }
 
     @Override

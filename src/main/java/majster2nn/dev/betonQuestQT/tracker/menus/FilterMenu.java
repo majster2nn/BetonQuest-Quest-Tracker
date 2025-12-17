@@ -2,6 +2,7 @@ package majster2nn.dev.betonQuestQT.tracker.menus;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
+import majster2nn.dev.betonQuestQT.Utils;
 import majster2nn.dev.betonQuestQT.menu_handlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.menu_handlers.MultiPageInventoryGUI;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
@@ -35,7 +36,7 @@ public class FilterMenu extends MultiPageInventoryGUI {
 
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*6, Component.text(invName));
+        return Bukkit.createInventory(null, 9*6, Utils.formatYmlString(invName));
     }
 
     @Override
