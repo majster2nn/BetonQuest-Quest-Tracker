@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id "io.papermc.paperweight.userdev" version "2.0.0-beta.19"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = 'majster2nn.dev'
@@ -7,23 +9,17 @@ version = '1.0'
 
 repositories {
     mavenCentral()
+    maven { url = 'https://repo.lucko.me/' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-    maven { url = 'https://oss.sonatype.org/content/groups/public/' }
-    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://libraries.minecraft.net/' }
     maven { url = "https://maven.minecraft.net/" }
     maven { url = 'https://repo.dmulloy2.net/repository/public/' }
     maven { url = "https://maven.enginehub.org/repo/" }
-    maven {
-        name = 'papermc'
-        url = 'https://repo.papermc.io/repository/maven-public/'
-    }
-    maven {
-        name = 'citizens-repo'
-        url = 'https://maven.citizensnpcs.co/repo'
-    }
-    maven { url = 'https://nexus.betonquest.org/repository/betonquest/' }
+
+    maven {url = 'https://repo.papermc.io/repository/maven-public/'}
+
+    maven { url = 'https://repo.betonquest.org/betonquest/' }
     maven { url = 'https://repo.minebench.de/'}
     maven { url = 'https://repo.extendedclip.com/releases/' }
 }
@@ -31,12 +27,22 @@ repositories {
 dependencies {
 //    compileOnly 'org.betonquest:betonquest:3.0.0-20250910.222318-377'
     compileOnly 'org.betonquest:betonquest:3.0.0-SNAPSHOT' //-- modern development
-    implementation 'com.zaxxer:HikariCP:7.0.2'
-    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+
     implementation "net.kyori:adventure-platform-bukkit:4.3.4"
 
     compileOnly 'com.mojang:authlib:1.5.25'
     compileOnly 'me.clip:placeholderapi:2.11.6'
+
+    paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
+}
+
+tasks {
+    runServer {
+        // Configure the Minecraft version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        minecraftVersion("1.21.10")
+    }
 }
 
 java {
@@ -55,16 +61,13 @@ tasks.register('fatJar', Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set('')
 
-    manifest {
-        attributes 'Main-Class': 'rpg.rpg_base.RPG_Base'  // Replace with your actual main class
-    }
-
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
 
-    destinationDirectory.set(file("C:/Pulpit/projekty różne/projekty ważne/serwer/SAO Debug/plugins"))
+//    destinationDirectory.set(file("C:/Pulpit/projekty różne/projekty ważne/serwer/SAO Debug/plugins"))
+    destinationDirectory.set(file("C:/Pulpit/projekty różne/projekty ważne/serwer/HorizonCraft 1.21.10/plugins"))
     archiveFileName.set("BetonQuestQT.jar")
     with jar
 }

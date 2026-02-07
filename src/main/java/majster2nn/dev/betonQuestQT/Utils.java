@@ -7,12 +7,11 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.instruction.argument.Argument;
-import org.betonquest.betonquest.api.instruction.variable.Variable;
+import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestException;
-import org.betonquest.betonquest.api.quest.condition.ConditionID;
+import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -136,18 +135,18 @@ public class Utils {
 
     public static String formatLineWithVariables(String line, QuestPackage questPackage, Profile profile) {
         try {
-            return new Variable<>(BetonQuest.getInstance().getVariableProcessor(), questPackage, line, Argument.STRING).getValue(profile);
+            return new DefaultArgument<>(BetonQuest.getInstance().getPlaceholderProcessor(), questPackage, line, s -> s).getValue(profile);
         } catch (QuestException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static boolean checkBqConditions(QuestPackage questPackage, String path, Profile profile){
-        List<ConditionID> conditions = new ArrayList<>();
+        List<ConditionIdentifier> conditions = new ArrayList<>();
         for(String condition : Optional.ofNullable(questPackage.getConfig().getString(path)).orElse("").split(",")){
             if(!condition.isBlank()){
                 try {
-                    conditions.add(new ConditionID(BetonQuest.getInstance().getQuestPackageManager(), questPackage, condition));
+                    conditions.add(BetonQuest.getInstance().getQuestRegistries().identifier().getFactory(ConditionIdentifier.class).parseIdentifier(questPackage, condition));
                 } catch (QuestException e) {
                     throw new RuntimeException(e);
                 }

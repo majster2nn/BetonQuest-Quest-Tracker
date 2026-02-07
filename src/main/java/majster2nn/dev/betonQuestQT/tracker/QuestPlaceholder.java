@@ -5,10 +5,10 @@ import majster2nn.dev.betonQuestQT.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestException;
-import org.betonquest.betonquest.api.quest.condition.ConditionID;
 import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -229,11 +229,11 @@ public class QuestPlaceholder {
     public void update(Player player){
         Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
         for(QuestPart questPart : questParts){
-            List<ConditionID> conditions = new ArrayList<>();
+            List<ConditionIdentifier> conditions = new ArrayList<>();
             for(String condition : Optional.ofNullable(questPart.getConditions()).orElse("").split(",")){
                 if(!condition.isBlank()){
                     try {
-                        conditions.add(new ConditionID(BetonQuest.getInstance().getQuestPackageManager(), questPackage, condition));
+                        conditions.add(BetonQuest.getInstance().getQuestRegistries().identifier().getFactory(ConditionIdentifier.class).parseIdentifier(questPackage, condition));
                     } catch (QuestException e) {
                         throw new RuntimeException(e);
                     }
