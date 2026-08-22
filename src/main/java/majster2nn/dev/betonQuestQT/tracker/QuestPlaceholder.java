@@ -1,26 +1,25 @@
 package majster2nn.dev.betonQuestQT.tracker;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.Utils;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.betonquest.betonquest.BetonQuest;
-import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+@Deprecated
 public class QuestPlaceholder {
     public ItemStack displayMaterial;
     public String name;
@@ -28,6 +27,7 @@ public class QuestPlaceholder {
     public QuestPart currentlyActiveQuestPart;
     public Player player;
     public final QuestPackage questPackage;
+    private static String defaultLanguage = BetonQuestQT.getInstance().getDefaultLanguage();
 
     public static Map<String, QuestPackage> packageByName = new HashMap<>();
     public static Map<QuestPackage, String> packagesByCategory = new HashMap<>();
@@ -52,54 +52,45 @@ public class QuestPlaceholder {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static QuestPlaceholder getQuestPlaceholderFromPackage(QuestPackage questPackage, Player player){
         ComponentLogger logger = BetonQuestQT.getInstance().getComponentLogger();
         BetonQuest bqInstance = BetonQuest.getInstance();
 
-        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+        Profile profile = BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player);
         PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-        String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
+        String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : defaultLanguage;
         ConfigurationSection config = questPackage.getConfig();
 
-        String[] item = Utils.formatLineWithVariables(Utils.getSafeString(config, "questParameters", "display"), questPackage, null).split(",");
+        String itemMaterial = Utils.parseString(Utils.getSafeString(config, "questParameters", "display"), questPackage, null);
 
-        Material mat = Material.matchMaterial(item[0] != null ? item[0].toUpperCase() : "");
+        Material mat = Material.matchMaterial(itemMaterial != null ? itemMaterial.toUpperCase() : "");
         if(mat == null){
             if(BetonQuestQT.debug) {
-                logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no material found for \"" + item[0] + "\", defaulting to DIRT..."));
+                logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no material found for \"" + itemMaterial + "\", defaulting to DIRT..."));
             }
             mat = Material.DIRT;
         }
         ItemStack display = new ItemStack(mat);
 
-        if(item.length > 1 && !item[1].isEmpty()){
-            ItemMeta displayMeta = display.getItemMeta();
-            List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8"); //TODO .getVersion().split(".") and then for each splitted number check if its greater then corresponding number of 1.21.3 and if any of the numbers is bigger then use the new branch else use the legacy system
-            if(mcVersionsSupported.contains(Bukkit.getMinecraftVersion())){
-                CustomModelDataComponent component = displayMeta.getCustomModelDataComponent();
-                component.setStrings(List.of(item[1]));
-                displayMeta.setCustomModelDataComponent(component);
-            }else{
-                displayMeta.setCustomModelData(Integer.parseInt(item[1]));
-            }
+        String itemModel = Utils.parseString(Utils.getSafeString(config, "questParameters", "customModel"), questPackage, null);
 
-            display.setItemMeta(displayMeta);
+        if(itemModel != null && !itemModel.isEmpty() && !itemModel.isBlank()){
+            display.setData(DataComponentTypes.ITEM_MODEL, Key.key(itemModel));
         }
 
         String questName = Utils.getSafeString(config, "questParameters.name", lang);
 
-        if(questName.isBlank() || questName.isEmpty()){
+        if(questName.isBlank()){
             if(BetonQuestQT.debug) {
-                logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no name specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to " + BetonQuest.getInstance().getDefaultLanguage() + "..."));
+                logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no name specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to " + defaultLanguage + "..."));
             }
-            questName = Utils.getSafeString(config, "questParameters.name", BetonQuest.getInstance().getDefaultLanguage());
+            questName = Utils.getSafeString(config, "questParameters.name", defaultLanguage);
 
             if(questName.isBlank() || questName.isEmpty()) {
                 if(BetonQuestQT.debug) {
-                    logger.error(Component.text("Couldn't default to" + BetonQuest.getInstance().getDefaultLanguage() + " for package: " + questPackage + ", using default debug values..."));
+                    logger.error(Component.text("Couldn't default to" + defaultLanguage + " for package: " + questPackage + ", using default debug values..."));
                 }
                 questName = "ERROR - contact administration";
             }
@@ -131,22 +122,21 @@ public class QuestPlaceholder {
 
                 if(desc == null){
                     if(BetonQuestQT.debug) {
-                        logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no desc specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to " + BetonQuest.getInstance().getDefaultLanguage() + "..."));
+                        logger.error(Component.text("Error while parsing Quest Placeholder for " + questPackage + ", no desc specified for language " + bqInstance.getPlayerDataStorage().get(profile).getLanguage() + ", trying to default to " + defaultLanguage + "..."));
                     }
-                    desc = config.getString("questParameters.questParts." + key + ".desc." + BetonQuest.getInstance().getDefaultLanguage());
+                    desc = config.getString("questParameters.questParts." + key + ".desc." + defaultLanguage);
 
                     if(desc == null) {
                         if(BetonQuestQT.debug) {
-                            logger.error(Component.text("Couldn't default to " + BetonQuest.getInstance().getDefaultLanguage() + " for package: " + questPackage + ", using default debug values..."));
+                            logger.error(Component.text("Couldn't default to " + BetonQuestQT.getInstance().getDefaultLanguage() + " for package: " + questPackage + ", using default debug values..."));
                         }
                         desc = "ERROR - contact administration";
                     }
                 }
 
-                String conditions = config.getString("questParameters.questParts." + key + ".conditions");
                 String location = config.getString("questParameters.questParts." + key + ".location");
 
-                questParts.add(new QuestPart(desc, conditions, location));
+                questParts.add(new QuestPart(desc, "questParameters.questParts." + key + ".conditions", location));
             }
         }
 
@@ -162,9 +152,9 @@ public class QuestPlaceholder {
     public void setQuestDisplay() {
         ItemMeta questDisplayMeta = displayMaterial.getItemMeta();
 
-        String formattedName = Utils.formatLineWithVariables(name, questPackage, BetonQuest.getInstance().getProfileProvider().getProfile(player));
+        String formattedName = Utils.parseString(name, questPackage, BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player));
 
-        questDisplayMeta.displayName(Utils.formatYmlString(formattedName));
+        questDisplayMeta.displayName(Utils.formatString(formattedName));
 
         List<Component> loreComponents = new ArrayList<>();
 
@@ -181,7 +171,7 @@ public class QuestPlaceholder {
         }
 
         for(String line : lore.split("\n")){
-            loreComponents.add(Utils.formatYmlString(Utils.formatLineWithVariables(line, questPackage, BetonQuest.getInstance().getProfileProvider().getProfile(player))));
+            loreComponents.add(Utils.formatString(Utils.parseString(line, questPackage, BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player))));
         }
 
         ConfigurationSection settings = BetonQuestQT.getInstance().getConfig().getConfigurationSection("settings");
@@ -227,23 +217,9 @@ public class QuestPlaceholder {
     }
 
     public void update(Player player){
-        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+        Profile profile = BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player);
         for(QuestPart questPart : questParts){
-            List<ConditionIdentifier> conditions = new ArrayList<>();
-            for(String condition : Optional.ofNullable(questPart.getConditions()).orElse("").split(",")){
-                if(!condition.isBlank()){
-                    try {
-                        conditions.add(BetonQuest.getInstance().getQuestRegistries().identifier().getFactory(ConditionIdentifier.class).parseIdentifier(questPackage, condition));
-                    } catch (QuestException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-//            for(ConditionID condition : conditions){
-//                System.out.println("Condition " + condition.toString());
-//                System.out.println("Status " + BetonQuest.getInstance().getQuestTypeAPI().condition(profile, condition));
-//            } --DEBUG
-            if(BetonQuest.getInstance().getQuestTypeApi().conditions(profile, conditions)){
+            if(Utils.checkBqConditions(questPackage, questPart.getConditions(), profile)){
                 currentlyActiveQuestPart = questPart;
                 break;
             }

@@ -36,7 +36,7 @@ public class FilterMenu extends MultiPageInventoryGUI {
 
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*6, Utils.formatYmlString(invName));
+        return Bukkit.createInventory(null, 9*6, Utils.formatString(invName));
     }
 
     @Override
@@ -68,9 +68,9 @@ public class FilterMenu extends MultiPageInventoryGUI {
         return new InventoryButton()
                 .creator(player -> {
                     ItemStack display;
-                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    Profile profile = BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player);
                     PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuestQT.getInstance().getDefaultLanguage();
 
                     switch(slot){
                         case 46:{
@@ -104,9 +104,9 @@ public class FilterMenu extends MultiPageInventoryGUI {
     private InventoryButton backButton(){
         return new InventoryButton()
                 .creator(p -> {
-                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(p);
+                    Profile profile = BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(p);
                     PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuestQT.getInstance().getDefaultLanguage();
                     return ButtonVisualsStorage.getButtonItem("back", lang);
                 })
                 .consumer(event -> {

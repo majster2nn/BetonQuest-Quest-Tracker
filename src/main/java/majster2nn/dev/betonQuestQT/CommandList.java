@@ -35,56 +35,23 @@ public class CommandList {
                 .requires(sender -> sender.getSender().hasPermission("bqqt.admin"))
                 .then(Commands.literal("reload")
                         .executes(x -> {
-                            BetonQuest.getInstance().reload();
+                            BetonQuestQT.getInstance().getBetonQuestApi().reloader().reload();
                             BetonQuestQT plugin = BetonQuestQT.getInstance();
                             try{
                                 plugin.reload();
                                 x.getSource().getSender().sendMessage("Plugin reloaded successfully!");
                                 return 1;
                             }catch (Exception e){
-                                plugin.getLogger().severe(e.getMessage());
                                 x.getSource().getSender().sendMessage("Plugin reload failed! Check the console for errors and contact administrator.");
                                 return 0;
                             }
                         }))
-//                .then(Commands.literal("testMenu")
-//                        .executes(x -> {
-//                            if(!(x.getSource().getSender() instanceof Player player)) return 0;
-//                            MainQuestHoverMenu.questDisplay(player, player.getLocation().clone().add(0, 0.7, 0));
-//                            return 1;
-//                        }))
                 .then(Commands.literal("debug")
                         .executes(x -> {
                             BetonQuestQT.debug = !BetonQuestQT.debug;
                             x.getSource().getSender().sendMessage(Component.text("Debug mode set to: " + BetonQuestQT.debug));
                             return Command.SINGLE_SUCCESS;
-                        })
-                        .then(Commands.literal("questStatus")
-                                .then(Commands.argument("player", StringArgumentType.word())
-                                        .suggests((x, builder) -> {
-                                            List<String> players = new ArrayList<>();
-                                            Bukkit.getOnlinePlayers().forEach(p -> players.add(p.getName()));
-                                            players.stream()
-                                                    .filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
-                                                    .forEach(builder::suggest);
-                                            return builder.buildFuture();
-                                        })
-                                        .executes(ctx -> {
-//                                            Player player = Bukkit.getPlayer(ctx.getArgument("player", String.class));
-//                                            if(player != null){
-//
-//                                                StringBuilder messageRaw = new StringBuilder();
-//                                                statuses.entrySet().forEach(k -> {
-//                                                    messageRaw.append(k.getKey()).append(" ").append(k.getValue()).append("\n");
-//                                                });
-//                                                ctx.getSource().getSender().sendMessage(MiniMessage.miniMessage().deserialize(messageRaw.toString()));
-//                                            }else{
-//                                                ctx.getSource().getSender().sendMessage("Provided player is either offline or doesn't exist!!!");
-//                                            }
-                                            ctx.getSource().getSender().sendMessage("Currently this command is disabled. This will be fixed soon");
-                                            //TODO readd the statuses command
-                                            return Command.SINGLE_SUCCESS;
-                                        }))))
+                        }))
                 .then(Commands.literal("purge")
                         .then(Commands.argument("player", StringArgumentType.word())
                                 .suggests((x, builder) -> {

@@ -6,7 +6,6 @@ import majster2nn.dev.betonQuestQT.menu_handlers.InventoryButton;
 import majster2nn.dev.betonQuestQT.menu_handlers.InventoryGUI;
 import majster2nn.dev.betonQuestQT.tracker.menus.buttons.ButtonVisualsStorage;
 import majster2nn.dev.betonQuestQT.tracker.menus.layouts.ButtonLayoutContainer;
-import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
@@ -25,7 +24,7 @@ public class MainMenu extends InventoryGUI {
     }
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*amountOfRows, Utils.formatYmlString(invName));
+        return Bukkit.createInventory(null, 9*amountOfRows, Utils.formatString(invName));
     }
 
     @Override
@@ -42,9 +41,9 @@ public class MainMenu extends InventoryGUI {
     private InventoryButton buttonSkeleton(String buttonVisualName){
         return new InventoryButton()
                 .creator(player -> {
-                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    Profile profile = BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player);
                     PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuestQT.getInstance().getDefaultLanguage();
                     return ButtonVisualsStorage.getButtonItem(buttonVisualName, lang).clone();
                 })
                 .consumer(event -> {

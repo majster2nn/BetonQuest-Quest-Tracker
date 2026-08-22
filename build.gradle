@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id "io.papermc.paperweight.userdev" version "2.0.0-beta.19"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
@@ -12,28 +11,31 @@ repositories {
     maven { url = 'https://repo.lucko.me/' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://jitpack.io' }
-    maven { url = 'https://libraries.minecraft.net/' }
-    maven { url = "https://maven.minecraft.net/" }
     maven { url = 'https://repo.dmulloy2.net/repository/public/' }
     maven { url = "https://maven.enginehub.org/repo/" }
-
-    maven {url = 'https://repo.papermc.io/repository/maven-public/'}
-
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
     maven { url = 'https://repo.betonquest.org/betonquest/' }
     maven { url = 'https://repo.minebench.de/'}
     maven { url = 'https://repo.extendedclip.com/releases/' }
+    maven { url = 'https://repo.faststats.dev/releases' }
 }
 
 dependencies {
 //    compileOnly 'org.betonquest:betonquest:3.0.0-20250910.222318-377'
-    compileOnly 'org.betonquest:betonquest:3.0.0-SNAPSHOT' //-- modern development
+    compileOnly 'org.betonquest:betonquest:3.0.2' //-- modern development
 
     implementation "net.kyori:adventure-platform-bukkit:4.3.4"
 
     compileOnly 'com.mojang:authlib:1.5.25'
     compileOnly 'me.clip:placeholderapi:2.11.6'
+    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
+//     paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
 
-    paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
+    compileOnly("org.projectlombok:lombok:1.18.46")
+	annotationProcessor("org.projectlombok:lombok:1.18.46")
+
+	testCompileOnly("org.projectlombok:lombok:1.18.46")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 }
 
 tasks {
@@ -58,7 +60,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 tasks.register('fatJar', Jar) {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     archiveClassifier.set('')
 
     from {
@@ -67,7 +69,8 @@ tasks.register('fatJar', Jar) {
 
 
 //    destinationDirectory.set(file("C:/Pulpit/projekty różne/projekty ważne/serwer/SAO Debug/plugins"))
-    destinationDirectory.set(file("C:/Pulpit/projekty różne/projekty ważne/serwer/HorizonCraft 1.21.10/plugins"))
+
+    destinationDirectory.set(file("/home/majster/Desktop/Mc Servers/HorizonCraft 1.21.11/plugins/"))
     archiveFileName.set("BetonQuestQT.jar")
     with jar
 }

@@ -1,7 +1,6 @@
 package majster2nn.dev.betonQuestQT;
 
 import majster2nn.dev.betonQuestQT.events.Events;
-import majster2nn.dev.betonQuestQT.hooks.papi.QuestStatus;
 import majster2nn.dev.betonQuestQT.menu_handlers.GUIListener;
 import majster2nn.dev.betonQuestQT.menu_handlers.GUIManager;
 import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
@@ -9,6 +8,9 @@ import majster2nn.dev.betonQuestQT.tracker.menus.buttons.ButtonVisualsStorage;
 import majster2nn.dev.betonQuestQT.tracker.menus.layouts.ButtonLayoutContainer;
 import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.BetonQuestApi;
+import org.betonquest.betonquest.api.BetonQuestApiService;
+import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
 import org.bukkit.Bukkit;
@@ -21,6 +23,9 @@ public final class BetonQuestQT extends JavaPlugin {
     public double version = 0.3;
     public GUIManager guiManager;
     public static boolean debug = false;
+
+    private BetonQuestApi betonQuestApi;
+    private String defaultLanguage;
 
     @Override
     public void onLoad(){
@@ -35,13 +40,16 @@ public final class BetonQuestQT extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("BetonQuest") == null){
             getLogger().warning("BetonQuest plugin not found. This plugin requires BetonQuest");
             getServer().getPluginManager().disablePlugin(this);
+        }else{
+            BetonQuestApiService service = getServer().getServicesManager().load(BetonQuestApiService.class);
+
+            if(service != null) {
+                betonQuestApi = service.api(this);
+                defaultLanguage = BetonQuest.getInstance().getComponentLoader().get(LanguageProvider.class).getDefaultLanguage();
+            }
         }
 
         this.guiManager = new GUIManager();
-
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            new QuestStatus().register();
-        }
 
         reload();
 
@@ -69,11 +77,11 @@ public final class BetonQuestQT extends JavaPlugin {
 
         QuestPlaceholder.tags.addAll(getConfig().getStringList("filters"));
 
-        BetonQuest.getInstance().getQuestPackageManager().getPackages().forEach((id, questPackage) -> {
+        BetonQuestQT.getInstance().getBetonQuestApi().packages().getPackages().forEach((id, questPackage) -> {
             if(!questPackage.getConfig().contains("questParameters")){return;}
             QuestPlaceholder.packageByName.put(id, questPackage);
 
-            String questCategory = Utils.formatLineWithVariables(Utils.getSafeString(questPackage.getConfig(), "questParameters", "category"), questPackage, null);
+            String questCategory = Utils.parseString(Utils.getSafeString(questPackage.getConfig(), "questParameters", "category"), questPackage, null);
 
             QuestPlaceholder.packagesByCategory.put(questPackage, questCategory);
 
@@ -108,11 +116,11 @@ public final class BetonQuestQT extends JavaPlugin {
 
     public String getMenuTranslation(String part, Player player) {
         String lang;
-        Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+        Profile profile = BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player);
 
         try {
             PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-            lang = playerData.getLanguage().isEmpty() || playerData.getLanguage().get().contains("default") ? BetonQuest.getInstance().getDefaultLanguage() : playerData.getLanguage().get();
+            lang = playerData.getLanguage().isEmpty() || playerData.getLanguage().get().contains("default") ? defaultLanguage : playerData.getLanguage().get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -121,18 +129,27 @@ public final class BetonQuestQT extends JavaPlugin {
 
         if(result == null || result.isBlank()) {
             if (debug) {
-                getComponentLogger().error(Component.text("Error while trying to get translation for " + part + " for language " + lang + " trying to default to " + BetonQuest.getInstance().getDefaultLanguage() + "..."));
+                getComponentLogger().error(Component.text("Error while trying to get translation for " + part + " for language " + lang + " trying to default to " + defaultLanguage + "..."));
             }
-            result  = getConfig().getConfigurationSection("menuTranslations").getString(part + "." + BetonQuest.getInstance().getDefaultLanguage());
+            result  = getConfig().getConfigurationSection("menuTranslations").getString(part + "." + defaultLanguage);
             if(result == null || result.isBlank()) {
                 if (debug) {
-                    getComponentLogger().error(Component.text("Couldn't default to " + BetonQuest.getInstance().getDefaultLanguage() + " for " + part + "!!! Contact administrator!!!"));
+                    getComponentLogger().error(Component.text("Couldn't default to " + defaultLanguage + " for " + part + "!!! Contact administrator!!!"));
                 }
                 result = "???";
             }
         }
 
-        result = Utils.formatLineWithVariables(result, null, profile);
+        result = Utils.parseString(result, null, profile);
         return !result.isEmpty() ? result : "???";
+    }
+
+
+    public BetonQuestApi getBetonQuestApi() {
+        return betonQuestApi;
+    }
+
+    public String getDefaultLanguage() {
+        return defaultLanguage;
     }
 }

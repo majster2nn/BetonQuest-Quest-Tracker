@@ -8,7 +8,6 @@ import majster2nn.dev.betonQuestQT.tracker.QuestPlaceholder;
 import majster2nn.dev.betonQuestQT.tracker.menus.FilterMenu;
 import majster2nn.dev.betonQuestQT.tracker.menus.buttons.ButtonVisualsStorage;
 import majster2nn.dev.betonQuestQT.tracker.menus.layouts.ButtonLayoutContainer;
-import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.database.PlayerData;
@@ -31,7 +30,7 @@ public class QuestMenus extends MultiPageInventoryGUI {
 
     @Override
     protected Inventory createInventory(String invName) {
-        return Bukkit.createInventory(null, 9*amountOfRows, Utils.formatYmlString(invName));
+        return Bukkit.createInventory(null, 9*amountOfRows, Utils.formatString(invName));
     }
 
     @Override
@@ -56,14 +55,14 @@ public class QuestMenus extends MultiPageInventoryGUI {
                     String category = QuestPlaceholder.packagesByCategory.getOrDefault(q.questPackage, "none");
 
                     if ("finished".equalsIgnoreCase(questType)) {
-                        return Utils.checkBqConditions(q.questPackage, "questParameters.statuses.finished", BetonQuest.getInstance().getProfileProvider().getProfile(player.getUniqueId()));
+                        return Utils.checkBqConditions(q.questPackage, "questParameters.statuses.finished", BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player.getUniqueId()));
                     }
 
                     return questType.equalsIgnoreCase(category) &&
                             (Utils.checkBqConditions(
                                     q.questPackage,
                                     "questParameters.statuses.active",
-                                    BetonQuest.getInstance().getProfileProvider().getProfile(player.getUniqueId()))
+                                    BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player.getUniqueId()))
                             );
                 })
                 .filter(q -> {
@@ -110,9 +109,9 @@ public class QuestMenus extends MultiPageInventoryGUI {
     private InventoryButton buttonSkeleton(String buttonVisualName) {
         return new InventoryButton()
                 .creator(player -> {
-                    Profile profile = BetonQuest.getInstance().getProfileProvider().getProfile(player);
+                    Profile profile = BetonQuestQT.getInstance().getBetonQuestApi().profiles().getProfile(player);
                     PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
-                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuest.getInstance().getDefaultLanguage();
+                    String lang = playerData.getLanguage().isPresent() ? playerData.getLanguage().get() : BetonQuestQT.getInstance().getDefaultLanguage();
                     return ButtonVisualsStorage.getButtonItem(buttonVisualName, lang).clone();
                 })
                 .consumer(event -> {

@@ -4,23 +4,19 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import majster2nn.dev.betonQuestQT.BetonQuestQT;
 import majster2nn.dev.betonQuestQT.Utils;
 import majster2nn.dev.betonQuestQT.menu_handlers.InventoryGUI;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.betonquest.betonquest.BetonQuest;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class ButtonVisualsStorage {
     private static final Map<String, ButtonEntry> buttonVisualsMap = new HashMap<>();
 
@@ -38,18 +34,18 @@ public class ButtonVisualsStorage {
             Map<String, String> langMap = new HashMap<>();
             ConfigurationSection textSection = buttonSection.getConfigurationSection("text");
             if (textSection == null) {
-                langMap.put(BetonQuest.getInstance().getDefaultLanguage(), "ERROR");
+                langMap.put(BetonQuestQT.getInstance().getDefaultLanguage(), "ERROR");
             } else {
                 for (String langKey : textSection.getKeys(false)) {
                     langMap.put(langKey, buttonSection.getString("text." + langKey));
                 }
             }
 
-            List<String> display = List.of(buttonSection.getString("displayMaterial").split(","));
+            String display = buttonSection.getString("displayMaterial");
 
-            Material material = Material.matchMaterial(display.getFirst().toUpperCase());
+            Material material = Material.matchMaterial(display.toUpperCase());
 
-            String customModelData = display.size() > 1 ? display.getLast() : null;
+            String customModelData = buttonSection.getString("customModel");
 
             String events = "";
             if (buttonSection.contains("events")) {
@@ -63,24 +59,20 @@ public class ButtonVisualsStorage {
     public static ItemStack getButtonItem(String buttonName, String lang){
         ButtonEntry preFormatButton = buttonVisualsMap.getOrDefault(buttonName, new ButtonEntry(Material.AIR, new HashMap<>()));
         ItemStack button = new ItemStack(preFormatButton.getMaterial());
-        String correctedLang = lang.equals("default") ? BetonQuest.getInstance().getDefaultLanguage() : lang;
-        button.setData(DataComponentTypes.CUSTOM_NAME, Utils.formatYmlString(preFormatButton.getDisplayForLang(correctedLang)));
-
-        List<String> mcVersionsSupported = List.of("1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11");
-        ItemMeta meta = button.getItemMeta();
-
+        String correctedLang = lang.equals("default") ? BetonQuestQT.getInstance().getDefaultLanguage() : lang;
+        button.setData(DataComponentTypes.CUSTOM_NAME, Utils.formatString(preFormatButton.getDisplayForLang(correctedLang)));
+//        try {
+//            ItemIdentifier identifier = BetonQuestQT.getInstance().getBetonQuestApi().instructions().
+//            BetonQuestQT.getInstance().getBetonQuestApi().items().manager().getItem(null, DefaultItemIdentifier.);
+//        } catch (QuestException e) {
+//            throw new RuntimeException(e);
+//        }
         String customModelData = preFormatButton.getModelData();
-        if (customModelData!=null && !customModelData.isEmpty() && !customModelData.isBlank()) {
-            if (mcVersionsSupported.contains(Bukkit.getMinecraftVersion())) {
-                CustomModelDataComponent component = meta.getCustomModelDataComponent();
-                component.setStrings(List.of(preFormatButton.getModelData()));
-                meta.setCustomModelDataComponent(component);
-            } else {
-                meta.setCustomModelData(Integer.parseInt(preFormatButton.getModelData()));
-            }
+
+        if (customModelData != null && !customModelData.isBlank()) {
+            button.setData(DataComponentTypes.ITEM_MODEL, Key.key(customModelData));
         }
 
-        button.setItemMeta(meta);
         button.editPersistentDataContainer(pdc -> {
             pdc.set(InventoryGUI.buttonKey, PersistentDataType.INTEGER, 1);
         });
